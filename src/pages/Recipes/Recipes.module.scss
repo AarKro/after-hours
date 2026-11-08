@@ -1,0 +1,32 @@
+@use 'styles/abstracts' as *;
+@use 'styles/page' as *;
+
+.page {
+  @include page;
+}
+
+.header {
+  @include intro-block;
+
+  @include bp(desktop) {
+    max-width: $form-max-width;
+  }
+}
+
+.title {
+  @include type(h1);
+}
+
+.intro {
+  @include intro-text;
+}
+
+.grid {
+  @include reset-list;
+  display: grid;
+  gap: var(--space-list);
+
+  @include bp(desktop) {
+    grid-template-columns: 1fr 1fr;
+  }
+}

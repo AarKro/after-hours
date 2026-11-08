@@ -1,0 +1,26 @@
+@use 'styles/abstracts' as *;
+@use 'styles/page' as *;
+
+.page {
+  @include page;
+  gap: $space-m;
+}
+
+.copy {
+  @include intro-block;
+  max-width: $form-max-width;
+}
+
+.title {
+  @include type(display);
+}
+
+.intro {
+  @include intro-text;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-xs;
+}

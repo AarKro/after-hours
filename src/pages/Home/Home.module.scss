@@ -1,0 +1,88 @@
+@use 'styles/abstracts' as *;
+@use 'styles/page' as *;
+
+.page {
+  @include page;
+}
+
+// Mobile: text, then the bar scene. Desktop: side by side (Figma › hero).
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+
+  @include bp(desktop) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-m;
+}
+
+.heroCopy {
+  @include intro-block;
+}
+
+.headline {
+  @include type(display);
+  color: $text-primary;
+}
+
+.intro {
+  @include intro-text;
+}
+
+.illustration {
+  width: 100%;
+}
+
+.sectionTitle {
+  @include section-title;
+}
+
+.menu {
+  @include section;
+}
+
+// Cards share the row equally; when they'd get narrower than the mobile card,
+// the row scrolls edge to edge instead (Figma annotation on `signatures`).
+.carousel {
+  @include reset-list;
+  @include bleed-scroll;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax($card-min-width, 1fr);
+  gap: var(--space-list);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  // Room for the hover lift and focus ring inside the scroll container.
+  padding-block: $space-xs;
+  margin-block: -$space-xs;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.carouselItem {
+  scroll-snap-align: start;
+}
+
+.hours {
+  @include section;
+
+  @include bp(desktop) {
+    display: grid;
+    grid-template-columns: $split-title $split-content;
+    gap: $space-xl;
+    align-items: start;
+  }
+}

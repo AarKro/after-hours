@@ -1,0 +1,88 @@
+@use 'styles/abstracts' as *;
+@use 'styles/page' as *;
+
+.page {
+  @include page;
+}
+
+// Mobile: title, stage, chips stacked. Desktop: title + chips left, stage right (Figma › recipe-hero).
+.hero {
+  display: grid;
+  grid-template-areas:
+    'header'
+    'stage'
+    'facts';
+  row-gap: var(--space-section);
+
+  @include bp(desktop) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto auto 1fr;
+    grid-template-areas:
+      '. stage'
+      'header stage'
+      'facts stage'
+      '. stage';
+    column-gap: $space-xl;
+    row-gap: $space-m;
+  }
+}
+
+.header {
+  grid-area: header;
+  @include intro-block;
+}
+
+.title {
+  @include type(h1);
+}
+
+.intro {
+  @include intro-text;
+}
+
+.facts {
+  grid-area: facts;
+}
+
+.stage {
+  grid-area: stage;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: $stage-height-mobile;
+  border-radius: $radius-l;
+  background-color: $surface-raised;
+
+  @include bp(desktop) {
+    height: $stage-height-desktop;
+  }
+}
+
+.glass {
+  width: $stage-illustration-mobile;
+
+  @include bp(desktop) {
+    width: $stage-illustration-desktop;
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+
+  @include bp(desktop) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: $space-xl;
+  }
+}
+
+.section {
+  @include section;
+}
+
+.sectionTitle {
+  @include section-title;
+}

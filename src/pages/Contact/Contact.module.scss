@@ -1,0 +1,63 @@
+@use 'styles/abstracts' as *;
+@use 'styles/page' as *;
+
+.page {
+  @include page;
+  max-width: calc(#{$form-max-width} + 2 * var(--space-page-x));
+  // Figma: header → form is tight on mobile, generous on desktop.
+  gap: $space-s;
+
+  @include bp(desktop) {
+    gap: $space-xl;
+  }
+}
+
+.header {
+  @include intro-block;
+}
+
+.title {
+  @include type(h1);
+}
+
+.intro {
+  @include intro-text;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-s;
+}
+
+// First + last name side by side once there's room.
+.nameRow {
+  display: grid;
+  gap: $space-s;
+
+  @include bp(tablet) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-m;
+  padding: $space-l;
+  border-radius: $radius-l;
+  background-color: $surface-raised;
+}
+
+.successTitle {
+  @include type(h2);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.successText {
+  @include intro-text;
+}
