@@ -51,13 +51,13 @@ The SVGs in `src/assets/animations/` are SMIL animations exported with better-lo
 - `prefers-reduced-motion`: jump straight to the final frame (bar shows the static first frame of the loop).
 - `button.svg` is the animated "reserve a table" button. **Desktop only**, and it plays on hover/focus. On mobile, use the regular `<Button>`.
 
-| Illustration | Used for |
-|---|---|
-| `logo.svg` | header + footer logo |
-| `bar-intro.svg` → `bar-loop.svg` | home hero |
-| `rocks-glass.svg` | Old Fashioned, Negroni |
-| `orange.svg` | Amaretto Sour, Aperol Spritz |
-| `shaker.svg` | Espresso Martini |
+| Illustration                     | Used for                     |
+| -------------------------------- | ---------------------------- |
+| `logo.svg`                       | header + footer logo         |
+| `bar-intro.svg` → `bar-loop.svg` | home hero                    |
+| `rocks-glass.svg`                | Old Fashioned, Negroni       |
+| `orange.svg`                     | Amaretto Sour, Aperol Spritz |
+| `shaker.svg`                     | Espresso Martini             |
 
 ### Routing / GitHub Pages
 
