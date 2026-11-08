@@ -28,6 +28,7 @@ export function Illustration({ name, className }: IllustrationProps) {
     <AnimatedSvg
       markup={markup}
       viewBox={viewBox}
+      overflowVisible
       className={[styles.illustration, className].filter(Boolean).join(' ')}
     />
   )

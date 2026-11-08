@@ -27,8 +27,13 @@ interface AnimatedSvgProps {
   playOn?: 'view' | 'manual'
   /** The SVG repeats on its own; reduced motion shows its first frame instead of the last. */
   loops?: boolean
-  /** Override the root viewBox to reframe the artwork (overflow stays visible). */
+  /** Override the root viewBox to reframe the artwork. */
   viewBox?: string
+  /**
+   * Draw outside the viewBox. Needed when a reframed viewBox is tighter than the motion;
+   * off by default so artwork that enters from off-canvas (bar scene glass) stays hidden.
+   */
+  overflowVisible?: boolean
   onComplete?: () => void
   className?: string
   ref?: Ref<AnimatedSvgHandle>
@@ -43,6 +48,7 @@ export function AnimatedSvg({
   playOn = 'view',
   loops = false,
   viewBox,
+  overflowVisible = false,
   onComplete,
   className,
   ref,
@@ -124,6 +130,8 @@ export function AnimatedSvg({
     if (inView) play()
   }, [inView, play])
 
-  const classes = [styles.host, className].filter(Boolean).join(' ')
+  const classes = [styles.host, overflowVisible && styles.overflowVisible, className]
+    .filter(Boolean)
+    .join(' ')
   return <span ref={hostRef} className={classes} dangerouslySetInnerHTML={{ __html: html }} />
 }

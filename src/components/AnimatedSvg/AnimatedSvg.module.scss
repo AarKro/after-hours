@@ -4,6 +4,10 @@
   > svg {
     width: 100%;
     height: auto;
-    overflow: visible;
+    overflow: hidden;
   }
+}
+
+.overflowVisible > svg {
+  overflow: visible;
 }
