@@ -1,0 +1,27 @@
+@use 'styles/abstracts' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-s;
+  padding-block: $space-s;
+  border-bottom: $border-width-hairline solid $border-subtle;
+  @include type(body-m);
+}
+
+.label {
+  color: $text-primary;
+}
+
+.value {
+  margin: 0;
+  color: $text-secondary;
+  text-align: right;
+}

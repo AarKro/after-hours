@@ -1,0 +1,93 @@
+@use 'styles/abstracts' as *;
+
+// Text inside the field starts after its border + padding; label and messages line up with it.
+$text-inset: calc(#{$border-width-thick} + #{$space-s});
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2xs;
+}
+
+.label {
+  padding-inline: $text-inset;
+  @include type(caption);
+  color: $text-primary;
+  transition: color $duration-fast $ease-out;
+}
+
+.control {
+  width: 100%;
+  padding: $space-xs $space-s;
+  border: $border-width-thick solid $border-strong;
+  border-radius: $radius-m;
+  background-color: transparent;
+  @include type(body-m);
+  color: $text-primary;
+  caret-color: $action-accent;
+  transition: border-color $duration-fast $ease-out;
+
+  &::placeholder {
+    color: $text-placeholder;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, :focus) {
+      border-color: $action-secondary-hover;
+    }
+  }
+
+  // The accent border is the focus indicator (Figma state=active).
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: $border-focus;
+  }
+
+  &:disabled {
+    opacity: $disabled-opacity;
+    cursor: not-allowed;
+  }
+}
+
+.textareaWrap {
+  position: relative;
+  display: flex;
+
+  .control {
+    min-height: $textarea-min-height;
+    resize: vertical;
+  }
+}
+
+// Decorative resize grip from Figma, laid over the native one (which still does the work).
+.corner {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.invalid {
+  .label {
+    color: $feedback-error;
+  }
+
+  .control:not(:focus) {
+    border-color: $feedback-error;
+  }
+}
+
+.hint,
+.error {
+  padding-inline: $text-inset;
+  @include type(caption);
+}
+
+.hint {
+  color: $text-secondary;
+}
+
+.error {
+  color: $feedback-error;
+}

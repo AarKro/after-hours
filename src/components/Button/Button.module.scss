@@ -1,0 +1,17 @@
+@use 'styles/abstracts' as *;
+
+.button {
+  @include button-base;
+}
+
+.secondary {
+  @include button-secondary;
+}
+
+.secondary-outlined {
+  @include button-secondary-outlined;
+}
+
+.fullWidth {
+  width: 100%;
+}

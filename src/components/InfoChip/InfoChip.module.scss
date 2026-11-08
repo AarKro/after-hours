@@ -1,0 +1,17 @@
+@use 'styles/abstracts' as *;
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-xs;
+}
+
+.chip {
+  padding: $space-xs $space-s;
+  border: $border-width-regular solid $border-strong;
+  border-radius: $radius-full;
+  @include type(body-m);
+  color: $text-primary;
+  white-space: nowrap;
+}

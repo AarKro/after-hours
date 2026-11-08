@@ -1,0 +1,23 @@
+@use 'styles/abstracts' as *;
+
+.skipLink {
+  @include button-base;
+  @include button-secondary;
+  position: absolute;
+  top: $space-xs;
+  left: $space-xs;
+  z-index: $z-menu;
+  transform: translateY(calc(-100% - #{$space-xs}));
+
+  &:focus-visible {
+    transform: none;
+  }
+}
+
+.main {
+  flex: 1;
+
+  &:focus {
+    outline: none;
+  }
+}

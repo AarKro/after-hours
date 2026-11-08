@@ -1,0 +1,92 @@
+@use 'styles/abstracts' as *;
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: $z-menu;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background-color: $scrim;
+  animation: fade-in $duration-base $ease-out;
+}
+
+.panel {
+  position: relative;
+  padding-bottom: $space-xl;
+  background-color: $surface-raised;
+  border-end-start-radius: $radius-m;
+  border-end-end-radius: $radius-m;
+  animation: slide-down $duration-slow $ease-out;
+}
+
+.bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: $space-s var(--space-page-x);
+  // Match the closed header's row height so the cross sits exactly over the burger.
+  min-height: calc(#{$logo-height} + 2 * #{$space-s});
+  align-items: center;
+}
+
+.close {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: $radius-xs;
+  background: none;
+}
+
+.links {
+  @include reset-list;
+}
+
+// Figma › mobile-menu-overlay-option
+.link {
+  display: block;
+  padding: $space-xs var(--space-page-x);
+  @include type(h1);
+  color: $text-primary;
+  transition: background-color $duration-fast $ease-out;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $surface-default;
+    }
+  }
+
+  &:focus-visible {
+    outline-offset: -$border-width-thick;
+  }
+}
+
+.linkActive {
+  background-image: linear-gradient(
+    to right,
+    $gradient-text-accent-start,
+    $gradient-text-accent-end
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $surface-default;
+    }
+  }
+}

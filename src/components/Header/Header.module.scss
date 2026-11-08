@@ -1,0 +1,87 @@
+@use 'styles/abstracts' as *;
+
+.header {
+  position: relative;
+  z-index: $z-header;
+}
+
+.inner {
+  @include container;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-m;
+  padding-block: $space-s;
+
+  @include bp(desktop) {
+    padding-block: $space-m;
+  }
+}
+
+.nav,
+.cta {
+  display: none;
+}
+
+.burger {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: $radius-xs;
+  background: none;
+}
+
+@include bp(desktop) {
+  .nav {
+    display: block;
+  }
+
+  .cta {
+    display: flex;
+  }
+
+  .burger {
+    display: none;
+  }
+}
+
+.links {
+  @include reset-list;
+  display: flex;
+  gap: $space-l;
+}
+
+// Figma › nav-link: text + accent-gradient indicator when active.
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2xs;
+  @include type(body-l);
+  color: $text-secondary;
+  border-radius: $radius-xs;
+  transition: color $duration-fast $ease-out;
+
+  &::after {
+    content: '';
+    height: $nav-indicator-height;
+    border-radius: $radius-xs;
+    @include accent-gradient;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform $duration-base $ease-out;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: $text-primary;
+    }
+  }
+}
+
+.linkActive {
+  color: $text-primary;
+
+  &::after {
+    transform: scaleX(1);
+  }
+}

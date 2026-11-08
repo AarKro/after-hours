@@ -1,0 +1,16 @@
+@use 'styles/abstracts' as *;
+
+.logo {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: $radius-m;
+}
+
+.svg {
+  height: $logo-height;
+
+  > svg {
+    width: auto;
+    height: 100%;
+  }
+}

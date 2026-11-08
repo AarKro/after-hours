@@ -1,0 +1,96 @@
+@use 'styles/abstracts' as *;
+
+.card {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: $space-s;
+  border-radius: $radius-m;
+  background-color: $surface-raised;
+  transition: transform $duration-base $ease-out;
+
+  // The whole card is clickable through the heading link's overlay.
+  &:has(.link:focus-visible) {
+    @include focus-ring;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY($hover-lift);
+    }
+  }
+}
+
+.vertical {
+  flex-direction: column;
+  height: 100%;
+
+  .body {
+    flex-direction: column;
+    padding-bottom: $space-s;
+  }
+
+  .illustration {
+    width: $card-illustration-size;
+  }
+}
+
+.horizontal {
+  align-items: center;
+  gap: $space-s;
+
+  .body {
+    flex: 1;
+    align-items: center;
+  }
+
+  .illustration {
+    width: $card-illustration-size-compact;
+  }
+}
+
+.body {
+  display: flex;
+  gap: $space-s;
+  min-width: 0;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3xs;
+  min-width: 0;
+}
+
+.name {
+  @include type(h3);
+  color: $text-primary;
+}
+
+.link {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.summary {
+  @include type(body-m);
+  color: $text-secondary;
+}
+
+.price {
+  @include type(body-l);
+  color: $text-primary;
+  white-space: nowrap;
+}
+
+.currency {
+  @include visually-hidden;
+}

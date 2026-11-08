@@ -1,0 +1,80 @@
+@use 'styles/abstracts' as *;
+
+.footer {
+  margin-top: auto;
+  background-color: $surface-sunken;
+}
+
+// Mobile: stacked, divider above the copyright. Desktop: brand left, details right.
+.inner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: $space-m;
+  padding-block: $space-l;
+
+  @include bp(desktop) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-block: $space-xl;
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: $space-m;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  font-style: normal;
+  @include type(body-m);
+}
+
+.address {
+  color: $text-primary;
+}
+
+.secondary {
+  color: $text-secondary;
+}
+
+a.secondary {
+  align-self: flex-start;
+  border-radius: $radius-xs;
+  text-decoration: underline transparent;
+  text-underline-offset: $space-2xs;
+  transition: text-decoration-color $duration-fast $ease-out;
+
+  @media (hover: hover) {
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+.copyright {
+  @include type(caption);
+  color: $text-secondary;
+}
+
+.copyrightMobile {
+  padding-top: $space-m;
+  border-top: $border-width-hairline solid $border-subtle;
+
+  @include bp(desktop) {
+    display: none;
+  }
+}
+
+.copyrightDesktop {
+  display: none;
+
+  @include bp(desktop) {
+    display: block;
+  }
+}

@@ -1,0 +1,47 @@
+@use 'styles/abstracts' as *;
+
+.reserve {
+  @include button-base;
+  @include button-secondary;
+  position: relative;
+}
+
+.fullWidthOnMobile {
+  width: 100%;
+}
+
+.svg {
+  display: none;
+}
+
+@include bp(desktop) {
+  // The layout box is exactly the pill; the larger SVG canvas (with sparkles) is centred over it.
+  .reserve,
+  .fullWidthOnMobile {
+    width: $reserve-pill-width;
+    height: $reserve-pill-height;
+    padding: 0;
+    background: none;
+    border-radius: $radius-m;
+
+    &:active:not(:disabled),
+    &:hover:not(:disabled) {
+      background: none;
+    }
+  }
+
+  .label {
+    @include visually-hidden;
+  }
+
+  .svg {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: $reserve-svg-width;
+    height: $reserve-svg-height;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+}
