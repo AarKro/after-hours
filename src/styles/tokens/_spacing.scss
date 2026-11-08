@@ -1,0 +1,14 @@
+// Spacing tokens — Figma "Spacing" scale, plus two sub-steps used inside components.
+
+$space-3xs: 2px; // card text gap
+$space-2xs: 4px; // nav-link indicator gap, label → field gap
+$space-xs: 8px;
+$space-s: 16px;
+$space-m: 24px;
+$space-l: 40px;
+$space-xl: 64px;
+
+// Page side margin per mode (Figma variable `margin`).
+$space-margin-mobile: $space-s;
+$space-margin-tablet: $space-l;
+$space-margin-desktop: 80px;

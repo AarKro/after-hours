@@ -1,0 +1,36 @@
+// Layout tokens — fixed component sizes taken from the Figma frames.
+@use 'spacing' as *;
+
+// Content never grows beyond the desktop design's content width (1728 − 2 × 80).
+$content-max-width: 1568px;
+$form-max-width: 704px;
+
+$logo-height: 40px;
+$icon-size: 36px;
+$icon-size-s: 24px;
+
+$nav-indicator-height: 3px;
+
+$card-min-width: 260px;
+$card-illustration-size: 72px;
+$card-illustration-size-compact: 64px;
+
+$step-badge-size: 32px;
+
+$stage-height-mobile: 240px;
+$stage-height-desktop: 440px;
+$stage-illustration-mobile: 160px;
+$stage-illustration-desktop: 260px;
+
+$textarea-min-height: 144px;
+
+// Two-column split for "title | content" sections (opening hours).
+$split-title: 3fr;
+$split-content: 5fr;
+
+// The animated reserve button SVG draws a 152×40 pill inside a 184×72 canvas,
+// leaving room for the sparkles. These offsets line the pill up with the layout box.
+$reserve-svg-width: 184px;
+$reserve-svg-height: 72px;
+$reserve-pill-width: 152px;
+$reserve-pill-height: 40px;

@@ -1,0 +1,61 @@
+@use '../tokens' as *;
+@use 'mixins' as *;
+
+/// Shared button look (Figma › actions › button). Used by <Button> and the mobile <ReserveButton>.
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-xs $space-s;
+  border: 0;
+  border-radius: $radius-m;
+  background: none;
+  @include type(body-m);
+  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color $duration-fast $ease-out,
+    color $duration-fast $ease-out,
+    box-shadow $duration-fast $ease-out;
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: $disabled-opacity;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-secondary {
+  background-color: $action-secondary;
+  color: $action-primary;
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $action-secondary-hover;
+      color: $surface-raised;
+    }
+  }
+
+  &:active:not(:disabled) {
+    background-color: $action-secondary-hover;
+    color: $action-accent;
+  }
+}
+
+@mixin button-secondary-outlined {
+  color: $text-primary;
+  box-shadow: inset 0 0 0 $border-width-medium $action-secondary;
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      color: $action-secondary-hover;
+      box-shadow: inset 0 0 0 $border-width-medium $action-secondary-hover;
+    }
+  }
+
+  &:active:not(:disabled) {
+    color: $action-accent;
+    box-shadow: inset 0 0 0 $border-width-medium $action-accent;
+  }
+}

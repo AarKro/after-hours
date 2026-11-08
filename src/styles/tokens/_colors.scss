@@ -1,0 +1,42 @@
+// Color tokens — mirror the Figma variables (design system › Colors).
+@use 'sass:color';
+
+// action
+$action-primary: #600cdf;
+$action-secondary: #f7f7f8;
+$action-secondary-hover: #d0b8f5;
+$action-accent: #f36716;
+
+// surface
+$surface-default: #600cdf;
+$surface-raised: #772ce8;
+$surface-sunken: #381174;
+
+// border
+$border-subtle: #4c0eaa;
+$border-strong: #f7f7f8;
+$border-focus: #f36716;
+
+// feedback
+$feedback-success: #4dcb8c;
+$feedback-error: #eb4755;
+$feedback-warning: #f4b72a;
+
+// text
+$text-primary: #f7f7f8;
+$text-secondary: #d0b8f5;
+$text-inverse: #170b28;
+$text-placeholder: rgba(247, 247, 248, 0.55); // #f7f7f88c
+
+// gradient stops
+$gradient-accent-start: #f6c85a;
+$gradient-accent-end: #f36716;
+$gradient-text-accent-start: #fac6a8;
+$gradient-text-accent-end: #f9db94;
+
+// illustration
+$illustration-line: #ffffff;
+
+// derived (not in Figma, built from the tokens above)
+$scrim: color.change($surface-sunken, $alpha: 0.7);
+$disabled-opacity: 0.3;

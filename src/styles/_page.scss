@@ -1,0 +1,36 @@
+@use 'abstracts' as *;
+
+/// Standard page body: gutters, top/bottom padding and section rhythm (Figma › content frame).
+@mixin page {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+  padding-top: var(--space-page-top);
+  padding-bottom: var(--space-page-bottom);
+}
+
+/// Heading + content block (section title → list/grid).
+@mixin section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section-header);
+  min-width: 0;
+}
+
+@mixin section-title {
+  @include type(h2);
+  color: $text-primary;
+}
+
+/// Page title + intro paragraph.
+@mixin intro-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-tight);
+}
+
+@mixin intro-text {
+  @include type(body-l);
+  color: $text-secondary;
+}

@@ -1,0 +1,74 @@
+@use 'sass:map';
+@use 'sass:math';
+@use '../tokens' as *;
+
+/// Mobile-first media query: styles apply from the named breakpoint up.
+@mixin bp($name) {
+  @media (min-width: map.get($breakpoints, $name)) {
+    @content;
+  }
+}
+
+/// Styles below the named breakpoint only.
+@mixin below($name) {
+  @media (max-width: calc(#{map.get($breakpoints, $name)} - 1px)) {
+    @content;
+  }
+}
+
+/// Apply a typography role. Sizes come from the responsive custom properties in _theme.scss.
+@mixin type($role) {
+  font-family: $font-family-primary;
+  font-weight: map.get($type-roles, $role, weight);
+  font-size: var(--font-size-#{$role});
+  line-height: var(--line-height-#{$role});
+}
+
+/// Linear interpolation between two lengths across two viewport widths, clamped at both ends.
+@function fluid($min, $max, $from, $to) {
+  $slope: math.div($max - $min, $to - $from);
+  $intercept: $min - $slope * $from;
+  @return clamp(#{$min}, #{$intercept} + #{$slope * 100vw}, #{$max});
+}
+
+@mixin focus-ring {
+  outline: $border-width-thick solid $border-focus;
+  outline-offset: $border-width-thick;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/// Horizontal page gutters + max content width.
+@mixin container {
+  width: 100%;
+  max-width: calc(#{$content-max-width} + 2 * var(--space-page-x));
+  margin-inline: auto;
+  padding-inline: var(--space-page-x);
+}
+
+/// Let a horizontally scrolling row run edge to edge while its content keeps the page gutter.
+@mixin bleed-scroll {
+  margin-inline: calc(-1 * var(--space-page-x));
+  padding-inline: var(--space-page-x);
+  scroll-padding-inline: var(--space-page-x);
+}
+
+@mixin accent-gradient($direction: to right) {
+  background-image: linear-gradient($direction, $gradient-accent-start, $gradient-accent-end);
+}
+
+@mixin reset-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

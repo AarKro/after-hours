@@ -1,0 +1,52 @@
+// Responsive custom properties: the Figma "mobile" and "desktop" variable modes.
+@use 'sass:list';
+@use 'sass:map';
+@use 'abstracts' as *;
+
+:root {
+  // Typography — mobile mode
+  @each $role, $spec in $type-roles {
+    $mobile: map.get($spec, mobile);
+    --font-size-#{$role}: #{list.nth($mobile, 1)};
+    --line-height-#{$role}: #{list.nth($mobile, 2)};
+  }
+
+  // Semantic spacing — mobile mode
+  --space-page-x: #{$space-margin-mobile};
+  --space-page-top: #{$space-m};
+  --space-page-bottom: #{$space-xl};
+  --space-section: #{$space-l};
+  --space-section-header: #{$space-s};
+  --space-stack-tight: #{$space-xs};
+  --space-stack: #{$space-m};
+  --space-list: #{$space-s};
+
+  @include bp(tablet) {
+    --space-page-x: #{$space-margin-tablet};
+  }
+
+  @include bp(desktop) {
+    @each $role, $spec in $type-roles {
+      $desktop: map.get($spec, desktop);
+      --font-size-#{$role}: #{list.nth($desktop, 1)};
+      --line-height-#{$role}: #{list.nth($desktop, 2)};
+    }
+
+    // Fluid roles grow from the smaller role's desktop size to their own across desktop → wide.
+    @each $role, $from-role in $fluid-type-roles {
+      $min: map.get($type-roles, $from-role, desktop);
+      $max: map.get($type-roles, $role, desktop);
+      $from: map.get($breakpoints, desktop);
+      $to: map.get($breakpoints, wide);
+      --font-size-#{$role}: #{fluid(list.nth($min, 1), list.nth($max, 1), $from, $to)};
+      --line-height-#{$role}: #{fluid(list.nth($min, 2), list.nth($max, 2), $from, $to)};
+    }
+
+    --space-page-x: #{$space-margin-desktop};
+    --space-page-top: #{$space-l};
+    --space-section: #{$space-xl};
+    --space-section-header: #{$space-m};
+    --space-stack-tight: #{$space-m};
+    --space-list: #{$space-m};
+  }
+}
