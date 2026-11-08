@@ -39,4 +39,7 @@ $illustration-line: #ffffff;
 
 // derived (not in Figma, built from the tokens above)
 $scrim: color.change($surface-sunken, $alpha: 0.7);
+// feedback/error is only ~2:1 on surface/default — fine for borders, too low for text.
+// This tint keeps the hue and reaches WCAG AA (≥ 4.5:1) for error labels and messages.
+$feedback-error-text: color.mix($feedback-error, $text-primary, 35%);
 $disabled-opacity: 0.3;

@@ -6,13 +6,14 @@ import { RecipeSteps } from '@/components/RecipeStep/RecipeStep'
 import { ReserveButton } from '@/components/ReserveButton/ReserveButton'
 import { getDrink } from '@/data/drinks'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
-import { NotFound } from '@/pages/NotFound/NotFound'
+import { NOT_FOUND_TITLE, NotFound } from '@/pages/NotFound/NotFound'
 import styles from './Recipe.module.scss'
 
 export function Recipe() {
   const { slug } = useParams()
   const drink = getDrink(slug)
-  useDocumentTitle(drink?.name)
+  // NotFound sets the same title; the parent effect runs last, so it must agree.
+  useDocumentTitle(drink?.name ?? NOT_FOUND_TITLE)
 
   if (!drink) return <NotFound />
 

@@ -3,8 +3,10 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { paths } from '@/routes'
 import styles from './NotFound.module.scss'
 
+export const NOT_FOUND_TITLE = 'Page not found'
+
 export function NotFound() {
-  useDocumentTitle('Page not found')
+  useDocumentTitle(NOT_FOUND_TITLE)
 
   return (
     <div className={styles.page}>

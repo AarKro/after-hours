@@ -38,6 +38,7 @@ src/
 - Figma has two modes, **mobile** and **desktop**. Responsive values are emitted as CSS custom properties that switch at the breakpoint (see `styles/_theme.scss`), so components use one property, e.g. `var(--space-section)`, `var(--font-size-h2)`.
 - Component styles are CSS Modules (`*.module.scss`) and `@use 'styles/abstracts' as *;` for tokens and mixins.
 - Mobile-first: write base styles for mobile, then `@include bp(desktop) { … }`.
+- Accessibility overrides of the design: error text uses `$feedback-error-text` (a tint of `feedback/error`), because the raw token is ~2:1 on `surface/default`. Borders keep the raw token.
 
 ### Animated illustrations
 
@@ -62,12 +63,14 @@ The SVGs in `src/assets/animations/` are SMIL animations exported with better-lo
 
 - Vite `base` is `/after-hours/`. Router `basename` comes from `import.meta.env.BASE_URL`.
 - Deep links work because the build copies `index.html` to `404.html` (GitHub Pages serves it for unknown paths and the SPA takes over).
-- Routes: `/`, `/recipes`, `/recipes/:slug`, `/contact`, and a catch-all 404.
+- Routes: `/`, `/recipes`, `/recipes/:slug`, `/contact`, and a catch-all 404. Pages are lazy-loaded per route (the inline SVGs are the bulk of the JS).
+- The nav says **Recipes** (Figma: "Recipe") because it links to the recipes index, not a single recipe.
 - "reserve a table" CTAs link to `/contact?intent=reservation`, which prefills the message.
 
 ### Contact form
 
 - Fields: first name, last name, e-mail, message (all required). Client-side validation runs on blur and on submit, and re-validates live after the first submit. Focus moves to the first invalid field on submit.
+- First + last name sit side by side from the tablet breakpoint (stacked in Figma). The salutation and birthdate fields from Figma were dropped on purpose.
 - **Submission is simulated** (no backend yet). The submit handler lives in `src/pages/Contact/submitContactForm.ts`. Swap in a real service (e.g. Web3Forms/Formspree) there.
 
 ## Conventions

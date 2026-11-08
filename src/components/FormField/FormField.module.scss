@@ -70,7 +70,7 @@ $text-inset: calc(#{$border-width-thick} + #{$space-s});
 
 .invalid {
   .label {
-    color: $feedback-error;
+    color: $feedback-error-text;
   }
 
   .control:not(:focus) {
@@ -89,5 +89,5 @@ $text-inset: calc(#{$border-width-thick} + #{$space-s});
 }
 
 .error {
-  color: $feedback-error;
+  color: $feedback-error-text;
 }

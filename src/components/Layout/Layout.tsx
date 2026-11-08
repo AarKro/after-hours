@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { Footer } from '@/components/Footer/Footer'
 import { Header } from '@/components/Header/Header'
@@ -21,7 +21,10 @@ export function Layout() {
       </a>
       <Header />
       <main id={MAIN_ID} tabIndex={-1} className={styles.main}>
-        <Outlet />
+        {/* Pages are lazy-loaded; header and footer stay put while a page chunk loads. */}
+        <Suspense>
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
     </>
