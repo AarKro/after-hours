@@ -233,6 +233,35 @@ p {
   color: var(--ink-soft);
 }
 
+/* links on the end slide: label in header style, link below */
+.links {
+  list-style: none;
+  padding: 24px 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-m);
+  border-top: 2px solid var(--border-subtle);
+}
+.links li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.links span {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.links a {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+.links a:hover {
+  color: var(--accent);
+}
+
 /* ---------- project: Figma excerpts running off the bottom edge ---------- */
 .shots {
   position: relative;
