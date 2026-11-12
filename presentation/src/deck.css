@@ -640,30 +640,9 @@ html:not(.print) .slide.active .steps li {
   align-items: center;
 }
 .takeaway h3 {
-  font-size: 48px;
+  font-size: 64px;
   line-height: 1.1;
   font-weight: 900;
-  margin-bottom: var(--gap-xs);
-}
-.takeaway p {
-  font-size: 26px;
-  color: var(--ink-soft);
-  max-width: 980px;
-}
-.takeaway .legend {
-  margin-top: var(--gap-xs);
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.legend .key {
-  width: 28px;
-  height: 4px;
-  border-radius: 2px;
-}
-.legend .key.extreme {
-  margin-left: var(--gap-s);
 }
 .curves {
   width: 300px;
@@ -681,27 +660,39 @@ html:not(.print) .slide.active .steps li {
 .curves .curve {
   stroke-width: 6;
 }
-.curves .standard,
-.legend .key.standard {
+.curves .standard {
   stroke: var(--text-secondary);
-  background: var(--text-secondary);
   opacity: 0.6;
 }
-.curves .extreme,
-.legend .key.extreme {
+.curves .extreme {
   stroke: var(--accent);
-  background: var(--accent);
 }
 .detail {
   width: 300px;
   display: flex;
   justify-content: center;
 }
-.detail .spark {
+.detail .stars {
+  position: relative;
   width: 140px;
   height: 140px;
+}
+/* two stars like the pair in the logo: a big one and a smaller one above it */
+.detail .spark {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 120px;
+  height: 120px;
   margin: 0;
-  vertical-align: 0;
+}
+.detail .spark + .spark {
+  left: auto;
+  right: -40px;
+  top: -40px;
+  bottom: auto;
+  width: 56px;
+  height: 56px;
 }
 
 /* ---------- website link ---------- */
