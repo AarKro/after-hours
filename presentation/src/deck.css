@@ -429,8 +429,29 @@ p {
   gap: var(--gap-m);
 }
 
-/* step build (deck.js setStep/layout): items move and scale between steps; the second item is
-   hidden on step 1. Print mode never sets the variables, so both items sit in their place. */
+/* three cards: static illustration, first draft, final */
+.compare.square.three {
+  grid-template-columns: repeat(3, 500px);
+}
+.compare.wide.three {
+  max-width: 1170px;
+}
+.compare.scene.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+.media.static {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.media.static svg {
+  display: block;
+  width: var(--art, 80%);
+  height: auto;
+}
+
+/* step build (deck.js setStep/layout): items move and scale between steps; cards not reached yet
+   are hidden. Print mode never sets the variables, so both items sit in their place. */
 .compare .item {
   translate: var(--tx, 0) var(--ty, 0);
   scale: var(--s, 1);
@@ -441,7 +462,7 @@ p {
 .no-move .compare .item {
   transition: none;
 }
-.slide[data-step='1'] .compare .item:nth-child(2) {
+.compare .item.waiting {
   visibility: hidden;
 }
 /* cards sit in the page colour; the featured one fades to surface/raised. The button's negative
@@ -722,11 +743,8 @@ html:not(.print) .slide.active .steps li {
     animation: rise 0.9s both;
     animation-delay: calc(0.15s + var(--w) * var(--stagger));
   }
-  html:not(.print) .slide.active .compare .item:first-child {
+  html:not(.print) .slide.active .compare .item.shown {
     animation: plop 0.75s 0.4s both;
-  }
-  html:not(.print) .slide.active:not([data-step='1']) .compare .item:nth-child(2) {
-    animation: plop 0.75s 0.45s both;
   }
   html:not(.print) .slide.active .rv {
     animation: plop 0.75s both;

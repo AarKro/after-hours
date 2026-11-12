@@ -163,64 +163,85 @@
     })
   }
 
-  // ---------- draft/final slides build up in three steps ----------
-  // 1: draft alone, centred and 20% bigger, looping. 2: draft shrinks to half size on the left and
-  // freezes on its last frame; final plays centred and 20% bigger. 3: both side by side, in sync.
-  const STEPS = 3
-  const FEATURE = 1.2 // scale of the item that is playing alone
-  const ASIDE = 0.5 // scale of the frozen draft on step 2
+  // ---------- comparison slides build up one card at a time ----------
+  // Step k (1..n): card k plays (or, for the static illustration, shows) alone, centred and 20%
+  // bigger on surface/raised; earlier cards wait at half size on the side, drafts frozen on their
+  // last frame. Step n + 1: all cards in their place, videos looping in sync.
+  const FEATURE = 1.2 // scale of the card in focus
+  const ASIDE = 0.5 // scale of the cards already shown
   const GAP = 40
   const isCompare = (slide) => !!slide.querySelector('.compare')
+  const itemsOf = (slide) => [...slide.querySelectorAll('.compare .item')]
+  const stepsOf = (slide) => itemsOf(slide).length + 1
   /** Translate + scale that move an item's centre to (cx, cy) at scale s. */
   function place(item, cx, cy, s) {
-    const bx = item.offsetLeft + item.offsetWidth / 2
-    const by = item.offsetTop + item.offsetHeight / 2
-    item.style.setProperty('--tx', `${cx - bx}px`)
-    item.style.setProperty('--ty', `${cy - by}px`)
+    item.style.setProperty('--tx', `${cx - (item.offsetLeft + item.offsetWidth / 2)}px`)
+    item.style.setProperty('--ty', `${cy - (item.offsetTop + item.offsetHeight / 2)}px`)
     item.style.setProperty('--s', s)
-  }
-  function layout(slide, step) {
-    const compare = slide.querySelector('.compare')
-    const [first, second] = compare.querySelectorAll('.item')
-    // the item playing alone is "featured": its card lifts to surface/raised (deck.css)
-    first.classList.toggle('featured', step === 1)
-    second.classList.toggle('featured', step === 2)
-    if (step === STEPS) {
-      for (const item of [first, second]) place(item, ...centreOf(item), 1)
-      return
-    }
-    // the area may also use the bottom padding of the slide
-    const pad = parseFloat(getComputedStyle(slide).paddingBottom) - 16
-    const area = {
-      x: compare.offsetLeft,
-      y: compare.offsetTop,
-      w: compare.offsetWidth,
-      h: compare.offsetHeight + pad,
-    }
-    const w = first.offsetWidth
-    const h = first.offsetHeight
-    const big = Math.min(FEATURE, area.w / w, area.h / h)
-    let cx = area.x + area.w / 2
-    let cy = area.y + area.h / 2
-    if (step === 1) return place(first, cx, cy, big)
-    // step 2: the draft goes to the left (side by side) or top-left (stacked rows), the final
-    // takes the centre but moves out of the draft's way if they would overlap
-    const sideBySide = first.offsetTop === second.offsetTop
-    const dx = area.x + (w * ASIDE) / 2
-    const dy = sideBySide ? cy : area.y + (h * ASIDE) / 2
-    place(first, dx, dy, ASIDE)
-    if (sideBySide) cx = Math.max(cx, area.x + w * ASIDE + GAP + (w * big) / 2)
-    else cy = Math.max(cy, area.y + h * ASIDE + GAP + (h * big) / 2)
-    place(second, cx, cy, big)
   }
   const centreOf = (item) => [
     item.offsetLeft + item.offsetWidth / 2,
     item.offsetTop + item.offsetHeight / 2,
   ]
-  function setStep(slide, step, instant) {
+  function layout(slide, step) {
     const compare = slide.querySelector('.compare')
-    const [first, second] = compare.querySelectorAll('.item')
-    const [v1, v2] = [first, second].map((item) => item.querySelector('video'))
+    const items = itemsOf(slide)
+    const focus = step - 1 // index of the featured card; items.length on the last step
+    items.forEach((item, i) => {
+      item.classList.toggle('featured', i === focus)
+      item.classList.toggle('shown', i <= focus)
+      item.classList.toggle('waiting', i > focus)
+    })
+    for (const item of items) place(item, ...centreOf(item), 1)
+    if (focus >= items.length) return
+    // the full content width of the slide, and the comparison's height plus most of the bottom padding
+    const css = getComputedStyle(slide)
+    const padX = parseFloat(css.paddingLeft)
+    const area = {
+      x: padX,
+      y: compare.offsetTop,
+      w: slide.clientWidth - 2 * padX,
+      h: compare.offsetHeight + parseFloat(css.paddingBottom) - 16,
+    }
+    const w = items[0].offsetWidth
+    const h = items[0].offsetHeight
+    // cards in one row wait in a column on the left; stacked rows wait in a row along the top
+    const sideBySide = items[0].offsetTop === items[1].offsetTop
+    const aside = items.slice(0, focus)
+    const sw = w * ASIDE
+    const sh = h * ASIDE
+    let used = 0 // width (side by side) or height (stacked) taken by the waiting cards
+    if (aside.length) {
+      if (sideBySide) {
+        const total = aside.length * sh + (aside.length - 1) * GAP
+        aside.forEach((item, i) =>
+          place(
+            item,
+            area.x + sw / 2,
+            area.y + (area.h - total) / 2 + i * (sh + GAP) + sh / 2,
+            ASIDE,
+          ),
+        )
+        used = sw + GAP
+      } else {
+        aside.forEach((item, i) =>
+          place(item, area.x + i * (sw + GAP) + sw / 2, area.y + sh / 2, ASIDE),
+        )
+        used = sh + GAP
+      }
+    }
+    const free = sideBySide ? { w: area.w - used, h: area.h } : { w: area.w, h: area.h - used }
+    const big = Math.min(FEATURE, free.w / w, free.h / h)
+    // centre of the slide area, nudged out of the waiting cards' way when they would overlap
+    const cx = sideBySide
+      ? Math.max(area.x + area.w / 2, area.x + used + (w * big) / 2)
+      : area.x + area.w / 2
+    const cy = sideBySide
+      ? area.y + area.h / 2
+      : Math.max(area.y + area.h / 2, area.y + used + (h * big) / 2)
+    place(items[focus], cx, cy, big)
+  }
+  function setStep(slide, step, instant) {
     layout(slide, step)
     if (instant) {
       slide.classList.add('no-move')
@@ -230,24 +251,30 @@
     slide._step = step
     clearTimeout(slide._vt)
     cancelAnimationFrame(slide._raf)
-    const delay = instant ? 300 : 0
-    if (step === 1) {
-      v2.pause()
-      v2.currentTime = 0
-      slide._vt = setTimeout(() => loop(v1), delay)
-    } else if (step === 2) {
-      freeze(v1)
-      slide._vt = setTimeout(() => loop(v2), delay || 200)
-    } else {
+    const delay = instant ? 300 : 200
+    const items = itemsOf(slide)
+    const focus = step - 1
+    const videos = items.map((item) => item.querySelector('video'))
+    if (focus >= items.length) {
+      const all = videos.filter(Boolean)
       slide._vt = setTimeout(() => {
-        loop(v1)
-        loop(v2)
-        keepInStep(slide, [v1, v2])
+        all.forEach((v) => loop(v))
+        keepInStep(slide, all)
       }, delay)
+      return
     }
+    videos.forEach((v, i) => {
+      if (!v) return
+      if (i < focus) freeze(v)
+      else if (i > focus) {
+        v.pause()
+        v.currentTime = 0
+      }
+    })
+    if (videos[focus]) slide._vt = setTimeout(() => loop(videos[focus]), delay)
   }
   function playVideos(slide, fromEnd) {
-    if (isCompare(slide)) return setStep(slide, fromEnd ? STEPS : 1, true)
+    if (isCompare(slide)) return setStep(slide, fromEnd ? stepsOf(slide) : 1, true)
     const vids = [...slide.querySelectorAll('video')]
     if (!vids.length) return
     slide._vt = setTimeout(() => {
@@ -280,7 +307,7 @@
     const s = slides[current]
     if (isCompare(s)) {
       const step = s._step + dir
-      if (step >= 1 && step <= STEPS) return setStep(s, step)
+      if (step >= 1 && step <= stepsOf(s)) return setStep(s, step)
     }
     go(current + dir, dir < 0)
   }

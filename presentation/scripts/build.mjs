@@ -1,6 +1,6 @@
 // Builds a single self-contained HTML deck (fonts, SVGs, videos, screenshots inlined) so it runs
 // offline from one file. Also writes the speaker notes as Markdown.
-// Placeholders: {{video name frames [cols]}}, {{svgfile path}}, {{img path}}, {{fonts}}, {{css}}, {{js}}, {{anims}}
+// Placeholders: {{video name frames [cols]}}, {{static name}}, {{svgfile path}}, {{img path}}, {{fonts}}, {{css}}, {{js}}, {{anims}}
 // Usage: node scripts/build.mjs [lang]   → out/praesentation.<lang>.html, out/sprechnotizen.<lang>.md
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
@@ -100,6 +100,41 @@ function looped(name) {
   return out
 }
 
+/*
+ * Static illustration from a Figma SVG export: keeps only the component's group and the gradient
+ * defs (Figma also exports the canvas and section backgrounds around it) and prefixes the IDs,
+ * because several exports reuse the same gradient names.
+ */
+const STATIC_GROUP = {
+  'rocks-glass': 'illustration-rocks-glass',
+  orange: 'illustration-citrus',
+  shaker: 'illustration-shaker',
+  logo: 'logo-full',
+  button: 'button-reserve',
+}
+function staticSvg(name) {
+  const src = read(join(ASSETS, 'static', `${name}.svg`))
+  const viewBox = src.match(/viewBox="([^"]+)"/)[1]
+  const open = `<g id="${STATIC_GROUP[name]}">`
+  const start = src.indexOf(open)
+  // find the matching </g> for the group
+  let depth = 0
+  let i = start
+  const tag = /<(\/?)g\b[^>]*?(\/?)>/g
+  tag.lastIndex = start
+  for (let m; (m = tag.exec(src));) {
+    if (m[2]) continue
+    depth += m[1] ? -1 : 1
+    if (depth === 0) {
+      i = m.index + m[0].length
+      break
+    }
+  }
+  const defs = src.match(/<defs>[\s\S]*<\/defs>/)?.[0] ?? ''
+  const svg = `<svg viewBox="${viewBox}" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${src.slice(start, i)}${defs}</svg>`
+  return svg.replace(/(id="|url\(#)([\w-]+)/g, (_, pre, id) => `${pre}static-${name}-${id}`)
+}
+
 const mime = { jpg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml' }
 
 let html = read(join(HERE, `src/slides.${lang}.html`))
@@ -112,6 +147,7 @@ html = html
     const file = looped(name)
     return `<video class="live" muted playsinline preload="auto" src="data:video/webm;base64,${b64(file)}"></video><div class="strip" style="--cols:${cols}">${stills(file, +n)}</div>`
   })
+  .replace(/\{\{static ([\w-]+)\}\}/g, (_, name) => staticSvg(name))
   .replace(/\{\{svgfile ([\w/.-]+)\}\}/g, (_, p) =>
     read(join(ASSETS, p))
       .replace(/\s(width|height)="[^"]*"/, '')
