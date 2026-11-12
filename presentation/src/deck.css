@@ -625,6 +625,85 @@ html:not(.print) .slide.active .steps li {
   }
 }
 
+/* ---------- Fazit: two takeaways, each with a small visual ---------- */
+.takeaways {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--gap-l);
+}
+.takeaway {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--gap-l);
+  align-items: center;
+}
+.takeaway h3 {
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: 900;
+  margin-bottom: var(--gap-xs);
+}
+.takeaway p {
+  font-size: 26px;
+  color: var(--ink-soft);
+  max-width: 980px;
+}
+.takeaway .legend {
+  margin-top: var(--gap-xs);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.legend .key {
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+}
+.legend .key.extreme {
+  margin-left: var(--gap-s);
+}
+.curves {
+  width: 300px;
+  height: auto;
+  overflow: visible;
+}
+.curves path {
+  fill: none;
+  stroke-linecap: round;
+}
+.curves .axis {
+  stroke: var(--border-subtle);
+  stroke-width: 3;
+}
+.curves .curve {
+  stroke-width: 6;
+}
+.curves .standard,
+.legend .key.standard {
+  stroke: var(--text-secondary);
+  background: var(--text-secondary);
+  opacity: 0.6;
+}
+.curves .extreme,
+.legend .key.extreme {
+  stroke: var(--accent);
+  background: var(--accent);
+}
+.detail {
+  width: 300px;
+  display: flex;
+  justify-content: center;
+}
+.detail .spark {
+  width: 140px;
+  height: 140px;
+  margin: 0;
+  vertical-align: 0;
+}
+
 /* ---------- website link ---------- */
 .live-link {
   flex: 1;
@@ -709,6 +788,11 @@ html:not(.print) .slide.active .steps li {
     animation-timing-function: var(--ease-settle);
   }
 }
+@keyframes draw-curve {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
 @keyframes grow {
   from {
     transform: scale(0);
@@ -745,6 +829,13 @@ html:not(.print) .slide.active .steps li {
   }
   html:not(.print) .slide.active .compare .item.shown {
     animation: plop 0.75s 0.4s both;
+  }
+  html:not(.print) .slide.active .curves .curve {
+    stroke-dasharray: 1;
+    animation: draw-curve 1.2s var(--ease-out) 0.5s both;
+  }
+  html:not(.print) .slide.active .curves .extreme {
+    animation-delay: 0.9s;
   }
   html:not(.print) .slide.active .rv {
     animation: plop 0.75s both;

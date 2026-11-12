@@ -18,7 +18,7 @@
   })
   // Content plops in with a stagger, in reading order.
   const REVEAL =
-    '.flow > *, .code, .brief > *, .hero-live, .shots img, .live-link > *, .links li, .byline'
+    '.flow > *, .code, .brief > *, .takeaway, .hero-live, .shots img, .live-link > *, .links li, .byline'
   slides.forEach((s) =>
     s.querySelectorAll(REVEAL).forEach((el, n) => {
       el.classList.add('rv')
