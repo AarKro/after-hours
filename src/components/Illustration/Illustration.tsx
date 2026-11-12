@@ -19,15 +19,18 @@ const illustrations: Record<IllustrationName, { markup: string; viewBox: string 
 
 interface IllustrationProps {
   name: IllustrationName
+  /** Play the animation when scrolled into view; otherwise show the final frame as a still. */
+  animated?: boolean
   className?: string
 }
 
-export function Illustration({ name, className }: IllustrationProps) {
+export function Illustration({ name, animated = false, className }: IllustrationProps) {
   const { markup, viewBox } = illustrations[name]
   return (
     <AnimatedSvg
       markup={markup}
       viewBox={viewBox}
+      playOn={animated ? 'view' : 'never'}
       overflowVisible
       className={[styles.illustration, className].filter(Boolean).join(' ')}
     />

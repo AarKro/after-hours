@@ -47,6 +47,7 @@ The SVGs in `src/assets/animations/` are SMIL animations exported with better-lo
 - Render them through `<AnimatedSvg>`. It inlines the markup, gives every instance unique IDs (gradients/clipPaths would otherwise collide) and controls the SVG timeline (`pauseAnimations` / `setCurrentTime` / `unpauseAnimations`).
 - Durations are read from the SVG itself (max `begin + dur`), never hard-coded.
 - **Trigger:** play once when scrolled into view.
+- The drink illustrations (`rocks-glass`, `orange`, `shaker`) only animate as the large illustration on the recipe page. Everywhere else (cocktail cards) they render as a still of the final frame (`<Illustration>` without `animated`).
 - The hero bar scene plays `bar-intro`, then swaps to the looping `bar-loop`.
 - `prefers-reduced-motion`: jump straight to the final frame (bar shows the static first frame of the loop).
 - `button.svg` is the animated "reserve a table" button. **Desktop only**, and it plays on hover/focus. On mobile, use the regular `<Button>`.

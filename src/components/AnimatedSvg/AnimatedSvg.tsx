@@ -23,8 +23,11 @@ export interface AnimatedSvgHandle {
 interface AnimatedSvgProps {
   /** Raw SVG markup (import with `?raw`). */
   markup: string
-  /** `view`: play once when scrolled into view. `manual`: only via the ref handle. */
-  playOn?: 'view' | 'manual'
+  /**
+   * `view`: play once when scrolled into view. `manual`: only via the ref handle.
+   * `never`: render as a still, frozen on the final frame.
+   */
+  playOn?: 'view' | 'manual' | 'never'
   /** The SVG repeats on its own; reduced motion shows its first frame instead of the last. */
   loops?: boolean
   /** Override the root viewBox to reframe the artwork. */
@@ -120,10 +123,14 @@ export function AnimatedSvg({
     svg.setAttribute('aria-hidden', 'true')
     svg.setAttribute('focusable', 'false')
     durationRef.current = getSmilDurationMs(svg)
-    svg.pauseAnimations()
-    svg.setCurrentTime(0)
+    if (playOn === 'never') {
+      showFinalFrame()
+    } else {
+      svg.pauseAnimations()
+      svg.setCurrentTime(0)
+    }
     return () => window.clearTimeout(timerRef.current)
-  }, [html, viewBox])
+  }, [html, viewBox, playOn, showFinalFrame])
 
   const inView = useInViewOnce(hostRef, playOn === 'view')
   useEffect(() => {

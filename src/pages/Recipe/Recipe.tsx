@@ -26,7 +26,12 @@ export function Recipe() {
         </header>
         <div className={styles.stage}>
           {/* key: replay the illustration when navigating between recipes */}
-          <Illustration key={drink.slug} name={drink.illustration} className={styles.glass} />
+          <Illustration
+            key={drink.slug}
+            name={drink.illustration}
+            animated
+            className={styles.glass}
+          />
         </div>
         <InfoChipList items={drink.facts} label="At a glance" className={styles.facts} />
       </div>
