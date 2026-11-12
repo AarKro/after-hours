@@ -96,32 +96,33 @@
     a.svg.setCurrentTime(0)
   }
 
-  // ---------- videos: every video on a slide restarts together once all have ended ----------
+  // ---------- videos: every video on a slide restarts together once all have finished ----------
+  // Videos are paused just before their end instead of being allowed to end: Chrome can blank an
+  // ended video, and the last frame should stay visible during the pause.
   function playVideos(slide) {
     const vids = [...slide.querySelectorAll('video')]
     if (!vids.length) return
-    const restart = () =>
+    const restart = () => {
       vids.forEach((v) => {
         v.currentTime = 0
         v.play()
       })
-    let ended = 0
-    vids.forEach((v) => {
-      v.onended = () => {
-        if (++ended === vids.length) {
-          ended = 0
-          slide._vt = setTimeout(restart, 1500)
-        }
-      }
-    })
+      watch()
+    }
+    const watch = () => {
+      const done = vids.filter((v) => v.paused || v.currentTime >= v.duration - 0.08)
+      done.forEach((v) => v.pause())
+      if (done.length === vids.length) slide._vt = setTimeout(restart, 1500)
+      else slide._raf = requestAnimationFrame(watch)
+    }
     slide._vt = setTimeout(restart, 300)
   }
   function stopVideos(slide) {
     clearTimeout(slide._vt)
+    cancelAnimationFrame(slide._raf)
     slide.querySelectorAll('video').forEach((v) => {
       v.pause()
       v.currentTime = 0
-      v.onended = null
     })
   }
 
@@ -151,9 +152,8 @@
   }
 
   slides.forEach((s, i) => {
-    const foot = s.querySelector('.slide-foot .n')
-    if (foot)
-      foot.textContent = `${String(i + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`
+    const n = s.querySelector('.meta .n')
+    if (n) n.textContent = String(i + 1).padStart(2, '0')
   })
 
   if (PRINT) {

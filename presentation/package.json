@@ -5,7 +5,6 @@
   "scripts": {
     "process": "node scripts/process-videos.mjs",
     "gifs": "node scripts/gifs.mjs",
-    "screenshots": "node scripts/screenshots.mjs",
     "build": "node scripts/build.mjs",
     "pdf": "node scripts/pdf.mjs",
     "package": "node scripts/package.mjs",
