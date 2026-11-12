@@ -145,7 +145,22 @@ html = html
   .replace('{{anims}}', () => JSON.stringify(anims).replace(/<\/script/g, '<\\/script'))
   .replace(/\{\{video ([\w-]+) (\d+)(?: (\d+))?\}\}/g, (_, name, n, cols = n) => {
     const file = looped(name)
-    return `<video class="live" muted playsinline preload="auto" src="data:video/webm;base64,${b64(file)}"></video><div class="strip" style="--cols:${cols}">${stills(file, +n)}</div>`
+    // intrinsic size up front, so the layout is right before the video's metadata has loaded
+    const [w, h] = execFileSync('ffprobe', [
+      '-v',
+      'error',
+      '-select_streams',
+      'v',
+      '-show_entries',
+      'stream=width,height',
+      '-of',
+      'csv=p=0',
+      file,
+    ])
+      .toString()
+      .trim()
+      .split(',')
+    return `<video class="live" width="${w}" height="${h}" muted playsinline preload="auto" src="data:video/webm;base64,${b64(file)}"></video><div class="strip" style="--cols:${cols}">${stills(file, +n)}</div>`
   })
   .replace(/\{\{static ([\w-]+)\}\}/g, (_, name) => staticSvg(name))
   .replace(/\{\{svgfile ([\w/.-]+)\}\}/g, (_, p) =>

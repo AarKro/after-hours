@@ -244,6 +244,13 @@
       : Math.min(area.y + area.h / 2, bottom - used - (h * big) / 2)
     place(items[focus], cx, cy, big)
   }
+  // safety net: re-measure if a video's size arrives while its slide is on screen
+  document.querySelectorAll('.compare video').forEach((v) =>
+    v.addEventListener('loadedmetadata', () => {
+      const slide = v.closest('.slide')
+      if (slide.classList.contains('active') && slide._step) layout(slide, slide._step)
+    }),
+  )
   function setStep(slide, step, instant) {
     layout(slide, step)
     if (instant) {
