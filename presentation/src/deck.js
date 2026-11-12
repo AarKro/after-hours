@@ -203,9 +203,12 @@
       w: slide.clientWidth - 2 * padX,
       h: compare.offsetHeight + parseFloat(css.paddingBottom) - 16,
     }
+    // the waiting row keeps to the regular content edge, not the bottom padding
+    const bottom = compare.offsetTop + compare.offsetHeight
     const w = items[0].offsetWidth
     const h = items[0].offsetHeight
-    // cards in one row wait in a column on the left; stacked rows wait in a row along the top
+    // cards in one row wait in a column on the left; stacked rows wait in a row along the bottom,
+    // away from the title
     const sideBySide = items[0].offsetTop === items[1].offsetTop
     const aside = items.slice(0, focus)
     const sw = w * ASIDE
@@ -225,7 +228,7 @@
         used = sw + GAP
       } else {
         aside.forEach((item, i) =>
-          place(item, area.x + i * (sw + GAP) + sw / 2, area.y + sh / 2, ASIDE),
+          place(item, area.x + i * (sw + GAP) + sw / 2, bottom - sh / 2, ASIDE),
         )
         used = sh + GAP
       }
@@ -238,7 +241,7 @@
       : area.x + area.w / 2
     const cy = sideBySide
       ? area.y + area.h / 2
-      : Math.max(area.y + area.h / 2, area.y + used + (h * big) / 2)
+      : Math.min(area.y + area.h / 2, bottom - used - (h * big) / 2)
     place(items[focus], cx, cy, big)
   }
   function setStep(slide, step, instant) {
