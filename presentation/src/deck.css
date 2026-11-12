@@ -429,6 +429,20 @@ p {
   gap: var(--gap-m);
 }
 
+/* step build (deck.js setStep): the first item starts centred, the second appears on step 2 */
+.compare .item {
+  transition: translate 0.9s var(--ease-overshoot, ease);
+}
+.no-move .compare .item {
+  transition: none;
+}
+.slide[data-step='1'] .compare .item:first-child {
+  translate: var(--dx, 0) var(--dy, 0);
+}
+.slide[data-step='1'] .compare .item:nth-child(2) {
+  visibility: hidden;
+}
+
 /* ---------- bar scene (AI) ---------- */
 .brief {
   display: grid;
@@ -694,6 +708,12 @@ html:not(.print) .slide.active .steps li {
   html:not(.print) .slide.active .w {
     animation: rise 0.9s both;
     animation-delay: calc(0.15s + var(--w) * var(--stagger));
+  }
+  html:not(.print) .slide.active .compare .item:first-child {
+    animation: plop 0.75s 0.4s both;
+  }
+  html:not(.print) .slide.active:not([data-step='1']) .compare .item:nth-child(2) {
+    animation: plop 0.75s 0.45s both;
   }
   html:not(.print) .slide.active .rv {
     animation: plop 0.75s both;

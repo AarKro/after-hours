@@ -18,7 +18,7 @@
   })
   // Content plops in with a stagger, in reading order.
   const REVEAL =
-    '.compare .item, .flow > *, .code, .brief > *, .hero-live, .shots img, .live-link > *, .links li, .byline'
+    '.flow > *, .code, .brief > *, .hero-live, .shots img, .live-link > *, .links li, .byline'
   slides.forEach((s) =>
     s.querySelectorAll(REVEAL).forEach((el, n) => {
       el.classList.add('rv')
@@ -128,14 +128,21 @@
     a.svg.setCurrentTime(0)
   }
 
-  // ---------- videos: native loop, all videos on a slide in step ----------
+  // ---------- videos ----------
   // Pairs are built to the same length with the end hold baked in (scripts/build.mjs). The browser's
-  // own loop wraps without a gap; restarting by seeking to 0 blanks the video while it decodes,
-  // which flickers. A watchdog only re-aligns a video that has drifted noticeably from the first.
+  // own loop wraps without a gap. A watchdog only re-aligns a video that has drifted from the lead.
   const DRIFT = 0.12
-  function playVideos(slide) {
-    const vids = [...slide.querySelectorAll('video')]
-    if (!vids.length) return
+  function loop(v, from = 0) {
+    v.loop = true
+    v.currentTime = from
+    v.play()
+  }
+  function freeze(v) {
+    v.pause()
+    v.currentTime = Math.max(0, v.duration - 0.05) // the held last frame
+  }
+  function keepInStep(slide, vids) {
+    cancelAnimationFrame(slide._raf)
     const [lead, ...rest] = vids
     const watch = () => {
       for (const v of rest) {
@@ -145,13 +152,7 @@
       }
       slide._raf = requestAnimationFrame(watch)
     }
-    slide._vt = setTimeout(() => {
-      vids.forEach((v) => {
-        v.loop = true
-        v.play()
-      })
-      watch()
-    }, 300)
+    watch()
   }
   function stopVideos(slide) {
     clearTimeout(slide._vt)
@@ -162,9 +163,61 @@
     })
   }
 
+  // ---------- draft/final slides build up in three steps ----------
+  // 1: draft alone, centred, looping. 2: draft moves to its place and freezes on its last frame,
+  // final appears and loops. 3: both loop together.
+  const STEPS = 3
+  const isCompare = (slide) => !!slide.querySelector('.compare')
+  function setStep(slide, step, instant) {
+    const compare = slide.querySelector('.compare')
+    const [first, second] = compare.querySelectorAll('.item')
+    const [v1, v2] = [first, second].map((item) => item.querySelector('video'))
+    // offset that puts the first item in the middle of the comparison area
+    first.style.setProperty(
+      '--dx',
+      `${compare.offsetLeft + compare.offsetWidth / 2 - (first.offsetLeft + first.offsetWidth / 2)}px`,
+    )
+    first.style.setProperty(
+      '--dy',
+      `${compare.offsetTop + compare.offsetHeight / 2 - (first.offsetTop + first.offsetHeight / 2)}px`,
+    )
+    if (instant) {
+      slide.classList.add('no-move')
+      requestAnimationFrame(() => requestAnimationFrame(() => slide.classList.remove('no-move')))
+    }
+    slide.dataset.step = step
+    slide._step = step
+    clearTimeout(slide._vt)
+    cancelAnimationFrame(slide._raf)
+    const delay = instant ? 300 : 0
+    if (step === 1) {
+      v2.pause()
+      v2.currentTime = 0
+      slide._vt = setTimeout(() => loop(v1), delay)
+    } else if (step === 2) {
+      freeze(v1)
+      slide._vt = setTimeout(() => loop(v2), delay || 200)
+    } else {
+      slide._vt = setTimeout(() => {
+        loop(v1)
+        loop(v2)
+        keepInStep(slide, [v1, v2])
+      }, delay)
+    }
+  }
+  function playVideos(slide, fromEnd) {
+    if (isCompare(slide)) return setStep(slide, fromEnd ? STEPS : 1, true)
+    const vids = [...slide.querySelectorAll('video')]
+    if (!vids.length) return
+    slide._vt = setTimeout(() => {
+      vids.forEach((v) => loop(v))
+      keepInStep(slide, vids)
+    }, 300)
+  }
+
   // ---------- navigation ----------
   let current = -1
-  function go(i) {
+  function go(i, fromEnd = false) {
     i = Math.max(0, Math.min(slides.length - 1, i))
     if (i === current) return
     if (current >= 0) {
@@ -177,9 +230,18 @@
     const s = slides[i]
     s.classList.add('active')
     anims.filter((a) => s.contains(a.el)).forEach(start)
-    playVideos(s)
+    playVideos(s, fromEnd)
     progress.style.width = `${((i + 1) / slides.length) * 100}%`
     history.replaceState(null, '', `#${i + 1}`)
+  }
+  /** Next/previous: steps through a draft/final slide before leaving it. */
+  function advance(dir) {
+    const s = slides[current]
+    if (isCompare(s)) {
+      const step = s._step + dir
+      if (step >= 1 && step <= STEPS) return setStep(s, step)
+    }
+    go(current + dir, dir < 0)
   }
 
   function fit() {
@@ -204,10 +266,10 @@
   addEventListener('keydown', (e) => {
     if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) {
       e.preventDefault()
-      go(current + 1)
+      advance(1)
     } else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) {
       e.preventDefault()
-      go(current - 1)
+      advance(-1)
     } else if (e.key === 'Home') go(0)
     else if (e.key === 'End') go(slides.length - 1)
     else if (e.key === 'f')
@@ -217,7 +279,7 @@
   })
   addEventListener('click', (e) => {
     if (e.target.closest('a')) return
-    go(current + (e.clientX > innerWidth / 3 ? 1 : -1))
+    advance(e.clientX > innerWidth / 3 ? 1 : -1)
   })
   go((parseInt(location.hash.slice(1), 10) || 1) - 1)
 })()
