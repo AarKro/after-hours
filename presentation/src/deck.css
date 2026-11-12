@@ -633,11 +633,6 @@ html:not(.print) .slide.active .steps li {
   vertical-align: 0.9em;
   color: var(--text-primary);
 }
-.label .spark {
-  width: 0.75em;
-  height: 0.75em;
-  vertical-align: 0.45em;
-}
 .spark svg {
   display: block;
   width: 100%;
