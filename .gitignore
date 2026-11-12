@@ -30,3 +30,6 @@ coverage/
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Presentation build output
+presentation/out/

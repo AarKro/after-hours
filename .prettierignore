@@ -3,3 +3,6 @@ node_modules
 package-lock.json
 src/assets/animations
 src/assets/icons
+presentation/out
+presentation/assets
+presentation/src/slides.*.html

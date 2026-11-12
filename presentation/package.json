@@ -1,0 +1,17 @@
+{
+  "name": "after-hours-presentation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "process": "node scripts/process-videos.mjs",
+    "gifs": "node scripts/gifs.mjs",
+    "screenshots": "node scripts/screenshots.mjs",
+    "build": "node scripts/build.mjs",
+    "pdf": "node scripts/pdf.mjs",
+    "package": "node scripts/package.mjs",
+    "all": "npm run gifs && npm run build && npm run pdf && npm run package"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.65.0"
+  }
+}
