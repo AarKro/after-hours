@@ -1,0 +1,99 @@
+// Turns PNG sequences rendered from old After Effects auto-saves (see ae/render-frames.jsx)
+// into cropped, square MP4s on the brand background for the "v1 vs. final" slides.
+// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>]
+// --full keeps the whole comp canvas instead of cropping to the artwork (for scenes like the bar),
+// scaled to <width> px.
+import { execFileSync, spawnSync } from 'node:child_process'
+import { readdirSync, mkdirSync } from 'node:fs'
+import { join } from 'node:path'
+
+const framesDir = process.argv[2]
+const full = Number(process.argv.find((a) => a.startsWith('--full='))?.split('=')[1] ?? 0)
+if (!framesDir) throw new Error('usage: process-videos.mjs <framesDir>')
+const outDir = new URL('../assets/process/', import.meta.url).pathname
+mkdirSync(outDir, { recursive: true })
+
+const SIZE = 720
+const PAD = 0.12 // breathing room around the artwork, relative to its size
+const BG = '0x600cdf' // surface/default
+
+// Union of the alpha bounding boxes of every frame, so the crop doesn't jump.
+function contentBox(dir) {
+  const log = spawnSync('ffmpeg', [
+    '-hide_banner',
+    '-i',
+    join(dir, '%04d.png'),
+    '-vf',
+    'alphaextract,bbox=min_val=8',
+    '-f',
+    'null',
+    '-',
+  ]).stderr.toString()
+  let [x1, y1, x2, y2] = [Infinity, Infinity, -Infinity, -Infinity]
+  for (const m of log.matchAll(/x1:(\d+) x2:(\d+) y1:(\d+) y2:(\d+)/g)) {
+    x1 = Math.min(x1, +m[1])
+    x2 = Math.max(x2, +m[2])
+    y1 = Math.min(y1, +m[3])
+    y2 = Math.max(y2, +m[4])
+  }
+  return { x1, y1, x2, y2 }
+}
+
+for (const name of readdirSync(framesDir)) {
+  const dir = join(framesDir, name)
+  if (full) {
+    const filter = `color=c=${BG}:r=25[c];[c][0]scale2ref[bg][fg];[bg][fg]overlay=shortest=1,scale=${full}:-2:flags=lanczos,format=yuv420p`
+    execFileSync('ffmpeg', [
+      '-v',
+      'error',
+      '-y',
+      '-framerate',
+      '25',
+      '-i',
+      join(dir, '%04d.png'),
+      '-filter_complex',
+      filter,
+      '-c:v',
+      'libx264',
+      '-crf',
+      '20',
+      '-movflags',
+      '+faststart',
+      join(outDir, `${name}.mp4`),
+    ])
+    console.log(name, 'full canvas')
+    continue
+  }
+  const { x1, y1, x2, y2 } = contentBox(dir)
+  const side = Math.round(Math.max(x2 - x1, y2 - y1) * (1 + 2 * PAD))
+  const cx = (x1 + x2) / 2,
+    cy = (y1 + y2) / 2
+  const x = Math.round(cx - side / 2),
+    y = Math.round(cy - side / 2)
+  // pad first so the square crop never leaves the canvas
+  const vf = [
+    `pad=iw+${2 * side}:ih+${2 * side}:${side}:${side}:color=black@0`,
+    `crop=${side}:${side}:${x + side}:${y + side}`,
+    `scale=${SIZE}:${SIZE}:flags=lanczos`,
+  ].join(',')
+  const filter = `color=c=${BG}:s=${SIZE}x${SIZE}:r=25[bg];[0]${vf}[fg];[bg][fg]overlay=shortest=1,format=yuv420p`
+  execFileSync('ffmpeg', [
+    '-v',
+    'error',
+    '-y',
+    '-framerate',
+    '25',
+    '-i',
+    join(dir, '%04d.png'),
+    '-filter_complex',
+    filter,
+    '-c:v',
+    'libx264',
+    '-crf',
+    '20',
+    '-movflags',
+    '+faststart',
+    join(outDir, `${name}.mp4`),
+  ])
+  console.log(name, { x1, y1, x2, y2, side })
+}
