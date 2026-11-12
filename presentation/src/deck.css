@@ -432,29 +432,6 @@ p {
 }
 
 /* ---------- bar scene (AI) ---------- */
-.roles {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--gap-m);
-  flex: 1;
-  align-content: start;
-}
-.roles .frame {
-  padding: 40px 40px 16px;
-}
-.roles h3 {
-  margin-bottom: var(--gap-s);
-}
-.roles ul {
-  list-style: none;
-  padding: 0;
-}
-.roles li {
-  font-size: 26px;
-  line-height: 1.4;
-  padding: 18px 0;
-  border-top: 2px solid var(--border-subtle);
-}
 .brief {
   display: grid;
   grid-template-columns: 1.1fr 1fr;

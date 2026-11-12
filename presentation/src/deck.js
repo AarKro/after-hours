@@ -18,7 +18,7 @@
   })
   // Content plops in with a stagger, in reading order.
   const REVEAL =
-    '.compare .item, .flow > *, .code, .roles > .frame, .brief > *, .hero-live, .shots img, .live-link > *, .links li, .byline'
+    '.compare .item, .flow > *, .code, .brief > *, .hero-live, .shots img, .live-link > *, .links li, .byline'
   slides.forEach((s) =>
     s.querySelectorAll(REVEAL).forEach((el, n) => {
       el.classList.add('rv')
@@ -128,27 +128,30 @@
     a.svg.setCurrentTime(0)
   }
 
-  // ---------- videos: loop, all videos on a slide restart together ----------
-  // Pairs are built to the same length with the end hold baked in (scripts/build.mjs), so a joint
-  // restart is a seamless synced loop. Videos are paused just before their end instead of being
-  // allowed to end: Chrome can blank an ended video.
+  // ---------- videos: native loop, all videos on a slide in step ----------
+  // Pairs are built to the same length with the end hold baked in (scripts/build.mjs). The browser's
+  // own loop wraps without a gap; restarting by seeking to 0 blanks the video while it decodes,
+  // which flickers. A watchdog only re-aligns a video that has drifted noticeably from the first.
+  const DRIFT = 0.12
   function playVideos(slide) {
     const vids = [...slide.querySelectorAll('video')]
     if (!vids.length) return
-    const restart = () => {
+    const [lead, ...rest] = vids
+    const watch = () => {
+      for (const v of rest) {
+        const d = Math.abs(v.currentTime - lead.currentTime)
+        // ignore the moment one has wrapped and the other hasn't yet
+        if (d > DRIFT && d < lead.duration - DRIFT) v.currentTime = lead.currentTime
+      }
+      slide._raf = requestAnimationFrame(watch)
+    }
+    slide._vt = setTimeout(() => {
       vids.forEach((v) => {
-        v.currentTime = 0
+        v.loop = true
         v.play()
       })
       watch()
-    }
-    const watch = () => {
-      const done = vids.filter((v) => v.paused || v.currentTime >= v.duration - 0.08)
-      done.forEach((v) => v.pause())
-      if (done.length === vids.length) restart()
-      else slide._raf = requestAnimationFrame(watch)
-    }
-    slide._vt = setTimeout(restart, 300)
+    }, 300)
   }
   function stopVideos(slide) {
     clearTimeout(slide._vt)
