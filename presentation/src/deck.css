@@ -227,20 +227,6 @@ p {
   justify-content: center;
   gap: var(--gap-l);
 }
-.title-slide .anim {
-  height: 300px;
-  justify-content: flex-start;
-  /* logo.svg has empty canvas left of the circle (≈7% of its height); pull it onto the text edge */
-  margin-left: -22px;
-}
-.title-slide .anim svg {
-  width: auto;
-}
-.title-slide .byline {
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--ink-soft);
-}
 
 .thanks {
   align-items: center;
@@ -292,6 +278,18 @@ p {
 }
 .links a:hover {
   color: var(--accent);
+}
+
+/* first slide: title with my name on the same baseline */
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.title-row .byline {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink-soft);
 }
 
 /* ---------- project: Figma excerpts running off the bottom edge ---------- */

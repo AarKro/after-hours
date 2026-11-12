@@ -27,7 +27,8 @@ const fonts = [400, 500, 700, 900]
   })
   .join('\n')
 
-const ANIM_NAMES = ['logo', 'bar-intro', 'bar-loop', 'button', 'rocks-glass', 'orange', 'shaker']
+// only the bar scene plays live; the other animations are shown as draft/final videos
+const ANIM_NAMES = ['bar-intro', 'bar-loop']
 const anims = Object.fromEntries(
   ANIM_NAMES.map((n) => [
     n,
