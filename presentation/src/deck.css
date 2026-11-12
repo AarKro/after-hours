@@ -448,6 +448,121 @@ p {
   aspect-ratio: 1024 / 732;
 }
 
+/* timeline of the AI session: a line with one dot per step, my steps in the accent colour.
+   In present mode the line draws left to right and each step appears as the line reaches it. */
+.steps {
+  --step-delay: 0.45s;
+  list-style: none;
+  padding: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--gap-s);
+  align-items: center;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 2px solid var(--border-subtle);
+  transform-origin: left;
+}
+.steps li {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  gap: var(--gap-s);
+  height: 640px;
+}
+.steps .top {
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.steps time {
+  font-size: 42px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.steps .icons {
+  display: flex;
+  gap: 6px;
+  height: 64px;
+}
+.steps .icons img,
+.steps .badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+}
+.steps .badge {
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+.steps .me-badge {
+  border-radius: 50%;
+  background: var(--accent);
+}
+.steps .who {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.steps .dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--text-primary);
+}
+.steps .me .dot {
+  background: var(--accent);
+}
+.steps .me time {
+  color: var(--accent-start);
+}
+.steps h3 {
+  font-size: 32px;
+}
+.steps p {
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+@keyframes draw-line {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+html:not(.print) .slide.active .steps::before {
+  animation: draw-line calc(var(--step-delay) * 7) linear both;
+}
+html:not(.print) .slide.active .steps li {
+  animation: step-in 0.5s ease-out both;
+  animation-delay: calc(var(--i) * var(--step-delay) + 0.15s);
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.print) .slide.active .steps::before,
+  html:not(.print) .slide.active .steps li {
+    animation: none;
+  }
+}
+
 /* ---------- website link ---------- */
 .live-link {
   flex: 1;
