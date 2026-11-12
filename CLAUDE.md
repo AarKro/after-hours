@@ -74,6 +74,10 @@ The SVGs in `src/assets/animations/` are SMIL animations exported with better-lo
 - First + last name sit side by side from the tablet breakpoint (stacked in Figma). The salutation and birthdate fields from Figma were dropped on purpose.
 - **Submission is simulated** (no backend yet). The submit handler lives in `src/pages/Contact/submitContactForm.ts`. Swap in a real service (e.g. Web3Forms/Formspree) there.
 
+## Presentation
+
+`presentation/` holds the course presentation and deliverables (separate package, not part of the site build). See `presentation/README.md`. The deck is German (`src/slides.de.html`); the bar scene and the button were animated with AI (Claude Code driving Illustrator + After Effects), and the deck says so.
+
 ## Conventions
 
 - TypeScript strict. Function components, named exports for components.
