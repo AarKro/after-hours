@@ -3,7 +3,8 @@
 // Placeholders: {{video name frames [cols]}}, {{svgfile path}}, {{img path}}, {{fonts}}, {{css}}, {{js}}, {{anims}}
 // Usage: node scripts/build.mjs [lang]   → out/praesentation.<lang>.html, out/sprechnotizen.<lang>.md
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 const lang = process.argv[2] ?? 'de'
@@ -72,6 +73,45 @@ function stills(file, n) {
   }).join('')
 }
 
+/*
+ * Draft and final of one illustration loop side by side, so both get the same length: the longer
+ * one's frame count plus a one-second hold, padded by repeating the last frame (sources untouched).
+ */
+const HOLD_FRAMES = 25
+const PAIR = /-(v1|draft|ai-draft|final)$/
+const frameCount = (file) =>
+  +execFileSync('ffprobe', [
+    '-v',
+    'error',
+    '-count_frames',
+    '-select_streams',
+    'v',
+    '-show_entries',
+    'stream=nb_read_frames',
+    '-of',
+    'csv=p=0',
+    file,
+  ]).toString()
+
+function looped(name) {
+  const dir = join(ASSETS, 'process')
+  const file = join(dir, `${name}.mp4`)
+  if (!PAIR.test(name)) return file
+  const base = name.replace(PAIR, '')
+  const partners = readdirSync(dir).filter(
+    (f) => f.endsWith('.mp4') && f.replace(/\.mp4$/, '').replace(PAIR, '') === base,
+  )
+  const target = Math.max(...partners.map((f) => frameCount(join(dir, f)))) + HOLD_FRAMES
+  const out = join(tmpdir(), `after-hours-loop-${name}.mp4`)
+  // prettier-ignore
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', file,
+    '-vf', `tpad=stop=${target - frameCount(file)}:stop_mode=clone,setsar=1`,
+    '-frames:v', String(target), '-c:v', 'libx264', '-crf', '20',
+    '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709',
+    '-movflags', '+faststart', out])
+  return out
+}
+
 const mime = { jpg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml' }
 
 let html = read(join(HERE, `src/slides.${lang}.html`))
@@ -81,7 +121,7 @@ html = html
   .replace('{{js}}', () => read(join(HERE, 'src/deck.js')))
   .replace('{{anims}}', () => JSON.stringify(anims).replace(/<\/script/g, '<\\/script'))
   .replace(/\{\{video ([\w-]+) (\d+)(?: (\d+))?\}\}/g, (_, name, n, cols = n) => {
-    const file = join(ASSETS, 'process', `${name}.mp4`)
+    const file = looped(name)
     return `<video class="live" muted playsinline preload="auto" src="data:video/mp4;base64,${b64(file)}"></video><div class="strip" style="--cols:${cols}">${stills(file, +n)}</div>`
   })
   .replace(/\{\{svgfile ([\w/.-]+)\}\}/g, (_, p) =>

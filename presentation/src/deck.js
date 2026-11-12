@@ -96,9 +96,10 @@
     a.svg.setCurrentTime(0)
   }
 
-  // ---------- videos: every video on a slide restarts together once all have finished ----------
-  // Videos are paused just before their end instead of being allowed to end: Chrome can blank an
-  // ended video, and the last frame should stay visible during the pause.
+  // ---------- videos: loop, all videos on a slide restart together ----------
+  // Pairs are built to the same length with the end hold baked in (scripts/build.mjs), so a joint
+  // restart is a seamless synced loop. Videos are paused just before their end instead of being
+  // allowed to end: Chrome can blank an ended video.
   function playVideos(slide) {
     const vids = [...slide.querySelectorAll('video')]
     if (!vids.length) return
@@ -112,7 +113,7 @@
     const watch = () => {
       const done = vids.filter((v) => v.paused || v.currentTime >= v.duration - 0.08)
       done.forEach((v) => v.pause())
-      if (done.length === vids.length) slide._vt = setTimeout(restart, 1500)
+      if (done.length === vids.length) restart()
       else slide._raf = requestAnimationFrame(watch)
     }
     slide._vt = setTimeout(restart, 300)
