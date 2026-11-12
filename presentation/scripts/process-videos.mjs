@@ -1,6 +1,6 @@
 // Turns PNG sequences rendered from old After Effects auto-saves (see ae/render-frames.jsx)
 // into cropped, square MP4s on the brand background for the "v1 vs. final" slides.
-// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>]
+// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>] [--bg=<0xrrggbb>]
 // --full keeps the whole comp canvas instead of cropping to the artwork (for scenes like the bar),
 // scaled to <width> px.
 import { execFileSync, spawnSync } from 'node:child_process'
@@ -13,9 +13,13 @@ if (!framesDir) throw new Error('usage: process-videos.mjs <framesDir>')
 const outDir = new URL('../assets/process/', import.meta.url).pathname
 mkdirSync(outDir, { recursive: true })
 
+// Browsers assume BT.709 for untagged video; encode and tag it so brand colours stay exact.
+const BT709 = ['-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709']
 const SIZE = 720
 const PAD = 0.12 // breathing room around the artwork, relative to its size
-const BG = '0x600cdf' // surface/default
+// surface/raised, the box the site puts illustrations in. --bg=0x600cdf for artwork that is drawn
+// for the page background (the button's negative stars are filled with surface/default).
+const BG = process.argv.find((a) => a.startsWith('--bg='))?.split('=')[1] ?? '0x772ce8'
 
 // Union of the alpha bounding boxes of every frame, so the crop doesn't jump.
 function contentBox(dir) {
@@ -42,7 +46,7 @@ function contentBox(dir) {
 for (const name of readdirSync(framesDir)) {
   const dir = join(framesDir, name)
   if (full) {
-    const filter = `color=c=${BG}:r=25[c];[c][0]scale2ref[bg][fg];[bg][fg]overlay=shortest=1,scale=${full}:-2:flags=lanczos,format=yuv420p`
+    const filter = `color=c=${BG}:r=25[c];[c][0]scale2ref[bg][fg];[bg][fg]overlay=shortest=1,scale=${full}:-2:flags=lanczos,setsar=1,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p`
     execFileSync('ffmpeg', [
       '-v',
       'error',
@@ -55,6 +59,7 @@ for (const name of readdirSync(framesDir)) {
       filter,
       '-c:v',
       'libx264',
+      ...BT709,
       '-crf',
       '20',
       '-movflags',
@@ -74,9 +79,9 @@ for (const name of readdirSync(framesDir)) {
   const vf = [
     `pad=iw+${2 * side}:ih+${2 * side}:${side}:${side}:color=black@0`,
     `crop=${side}:${side}:${x + side}:${y + side}`,
-    `scale=${SIZE}:${SIZE}:flags=lanczos`,
+    `scale=${SIZE}:${SIZE}:flags=lanczos,setsar=1`,
   ].join(',')
-  const filter = `color=c=${BG}:s=${SIZE}x${SIZE}:r=25[bg];[0]${vf}[fg];[bg][fg]overlay=shortest=1,format=yuv420p`
+  const filter = `color=c=${BG}:s=${SIZE}x${SIZE}:r=25[bg];[0]${vf}[fg];[bg][fg]overlay=shortest=1,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p`
   execFileSync('ffmpeg', [
     '-v',
     'error',
@@ -89,6 +94,7 @@ for (const name of readdirSync(framesDir)) {
     filter,
     '-c:v',
     'libx264',
+    ...BT709,
     '-crf',
     '20',
     '-movflags',
