@@ -1,9 +1,10 @@
 // Turns PNG sequences rendered from After Effects (see ae/render-all-50fps.jsx) into transparent
 // 50 fps WebM (VP9 with alpha) for the draft/final slides. The box colour comes from CSS, so a
 // video can never render a slightly different purple than its card.
-// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>] [--in-fps=<fps>]
+// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>] [--in-fps=<fps>] [--box-from=<dir>]
 // --full keeps the whole comp canvas instead of cropping to the artwork (for scenes like the bar),
 // scaled to <width> px. --in-fps for sequences rendered at a lower rate (frames are repeated).
+// --box-from crops with another sequence's content box (a draft framed exactly like its final).
 import { execFileSync, spawnSync } from 'node:child_process'
 import { readdirSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
@@ -74,7 +75,7 @@ for (const name of readdirSync(framesDir)) {
   if (full) {
     vf = `scale=${full}:-2:flags=lanczos,setsar=1`
   } else {
-    const { x1, y1, x2, y2 } = contentBox(dir)
+    const { x1, y1, x2, y2 } = contentBox(arg('box-from') ?? dir)
     const side = Math.round(Math.max(x2 - x1, y2 - y1) * (1 + 2 * PAD))
     const x = Math.round((x1 + x2) / 2 - side / 2)
     const y = Math.round((y1 + y2) / 2 - side / 2)
