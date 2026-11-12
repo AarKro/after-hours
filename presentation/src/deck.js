@@ -164,23 +164,64 @@
   }
 
   // ---------- draft/final slides build up in three steps ----------
-  // 1: draft alone, centred, looping. 2: draft moves to its place and freezes on its last frame,
-  // final appears and loops. 3: both loop together.
+  // 1: draft alone, centred and 20% bigger, looping. 2: draft shrinks to half size on the left and
+  // freezes on its last frame; final plays centred and 20% bigger. 3: both side by side, in sync.
   const STEPS = 3
+  const FEATURE = 1.2 // scale of the item that is playing alone
+  const ASIDE = 0.5 // scale of the frozen draft on step 2
+  const GAP = 40
   const isCompare = (slide) => !!slide.querySelector('.compare')
+  /** Translate + scale that move an item's centre to (cx, cy) at scale s. */
+  function place(item, cx, cy, s) {
+    const bx = item.offsetLeft + item.offsetWidth / 2
+    const by = item.offsetTop + item.offsetHeight / 2
+    item.style.setProperty('--tx', `${cx - bx}px`)
+    item.style.setProperty('--ty', `${cy - by}px`)
+    item.style.setProperty('--s', s)
+  }
+  function layout(slide, step) {
+    const compare = slide.querySelector('.compare')
+    const [first, second] = compare.querySelectorAll('.item')
+    // the item playing alone is "featured": its card lifts to surface/raised (deck.css)
+    first.classList.toggle('featured', step === 1)
+    second.classList.toggle('featured', step === 2)
+    if (step === STEPS) {
+      for (const item of [first, second]) place(item, ...centreOf(item), 1)
+      return
+    }
+    // the area may also use the bottom padding of the slide
+    const pad = parseFloat(getComputedStyle(slide).paddingBottom) - 16
+    const area = {
+      x: compare.offsetLeft,
+      y: compare.offsetTop,
+      w: compare.offsetWidth,
+      h: compare.offsetHeight + pad,
+    }
+    const w = first.offsetWidth
+    const h = first.offsetHeight
+    const big = Math.min(FEATURE, area.w / w, area.h / h)
+    let cx = area.x + area.w / 2
+    let cy = area.y + area.h / 2
+    if (step === 1) return place(first, cx, cy, big)
+    // step 2: the draft goes to the left (side by side) or top-left (stacked rows), the final
+    // takes the centre but moves out of the draft's way if they would overlap
+    const sideBySide = first.offsetTop === second.offsetTop
+    const dx = area.x + (w * ASIDE) / 2
+    const dy = sideBySide ? cy : area.y + (h * ASIDE) / 2
+    place(first, dx, dy, ASIDE)
+    if (sideBySide) cx = Math.max(cx, area.x + w * ASIDE + GAP + (w * big) / 2)
+    else cy = Math.max(cy, area.y + h * ASIDE + GAP + (h * big) / 2)
+    place(second, cx, cy, big)
+  }
+  const centreOf = (item) => [
+    item.offsetLeft + item.offsetWidth / 2,
+    item.offsetTop + item.offsetHeight / 2,
+  ]
   function setStep(slide, step, instant) {
     const compare = slide.querySelector('.compare')
     const [first, second] = compare.querySelectorAll('.item')
     const [v1, v2] = [first, second].map((item) => item.querySelector('video'))
-    // offset that puts the first item in the middle of the comparison area
-    first.style.setProperty(
-      '--dx',
-      `${compare.offsetLeft + compare.offsetWidth / 2 - (first.offsetLeft + first.offsetWidth / 2)}px`,
-    )
-    first.style.setProperty(
-      '--dy',
-      `${compare.offsetTop + compare.offsetHeight / 2 - (first.offsetTop + first.offsetHeight / 2)}px`,
-    )
+    layout(slide, step)
     if (instant) {
       slide.classList.add('no-move')
       requestAnimationFrame(() => requestAnimationFrame(() => slide.classList.remove('no-move')))
