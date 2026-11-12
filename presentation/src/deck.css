@@ -1,0 +1,550 @@
+/* Values mirror the site's tokens (src/styles/tokens) so the deck reads as the same brand. */
+:root {
+  --surface-default: #600cdf;
+  --surface-raised: #772ce8;
+  --surface-sunken: #381174;
+  --border-subtle: #4c0eaa;
+  --text-primary: #f7f7f8;
+  --text-secondary: #d0b8f5;
+  --text-inverse: #170b28;
+  --accent: #f36716;
+  --accent-grad: linear-gradient(135deg, #f6c85a, #f36716);
+  --text-grad: linear-gradient(90deg, #fac6a8, #f9db94);
+  /* inverted scheme: orange slides, purple windows for anything animated */
+  --slide-bg: linear-gradient(135deg, #f9db94 0%, #f6c85a 35%, #f36716 100%);
+  --purple-grad: linear-gradient(
+    160deg,
+    var(--surface-raised),
+    var(--surface-default) 60%,
+    var(--surface-sunken)
+  );
+  --ink: #170b28;
+  --ink-soft: #381174;
+  --ink-grad: linear-gradient(90deg, var(--surface-default), var(--surface-sunken));
+
+  --slide-w: 1920px;
+  --slide-h: 1080px;
+  --pad-x: 120px;
+  --pad-y: 96px;
+  --gap-l: 64px;
+  --gap-m: 40px;
+  --gap-s: 24px;
+  --gap-xs: 12px;
+  --radius-m: 16px;
+  --radius-l: 28px;
+  --frame: 2px solid var(--border-subtle);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+html,
+body {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---------- present mode: one slide at a time, scaled to fit ---------- */
+.deck {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.slide {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--slide-w);
+  height: var(--slide-h);
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  background: var(--slide-bg);
+  --fg: var(--ink);
+  --fg-muted: var(--ink-soft);
+  --text-fill: var(--ink-grad);
+  --dot: var(--purple-grad);
+  color: var(--fg);
+  padding: var(--pad-y) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.35s ease,
+    visibility 0s 0.35s;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s ease;
+}
+.progress {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--accent-grad);
+  transition: width 0.35s ease;
+  z-index: 2;
+}
+
+/* ---------- print mode: every slide is one page ---------- */
+@page {
+  size: 1920px 1080px;
+  margin: 0;
+}
+html.print,
+html.print body {
+  overflow: visible;
+  background: var(--surface-sunken);
+}
+html.print .deck {
+  position: static;
+  display: block;
+}
+html.print .slide {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  break-after: page;
+  transition: none;
+}
+html.print .progress {
+  display: none;
+}
+.strip {
+  display: none;
+}
+html.print .strip {
+  display: flex;
+}
+html.print .strip.anim-strip,
+html.print .media .strip {
+  display: grid;
+}
+html.print .live {
+  display: none;
+}
+
+/* ---------- type ---------- */
+.kicker {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  display: flex;
+  gap: var(--gap-xs);
+  align-items: center;
+}
+h1 {
+  font-size: 112px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+h2 {
+  font-size: 68px;
+  line-height: 1.06;
+  font-weight: 900;
+  letter-spacing: -0.005em;
+  max-width: 1500px;
+}
+h3 {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.lede {
+  font-size: 30px;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--fg-muted);
+  max-width: 1180px;
+}
+p,
+li {
+  font-size: 24px;
+  line-height: 1.5;
+}
+.muted {
+  color: var(--fg-muted);
+}
+.grad {
+  background: var(--text-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.footnote {
+  margin-top: auto;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--fg-muted);
+}
+.footnote::before {
+  content: '* ';
+}
+ul.points {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-s);
+}
+ul.points li {
+  padding-left: 36px;
+  position: relative;
+}
+ul.points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--dot);
+}
+strong {
+  font-weight: 700;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.chip-ai {
+  background: var(--purple-grad);
+  color: var(--text-primary);
+}
+.dark .chip-ai {
+  background: var(--accent-grad);
+  color: var(--text-inverse);
+}
+.chip-hand {
+  border: 2px solid var(--fg-muted);
+  color: var(--fg-muted);
+}
+
+/* ---------- slide chrome ---------- */
+.slide-foot {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  bottom: 36px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  letter-spacing: 0.06em;
+}
+
+/* ---------- layout helpers ---------- */
+.row {
+  display: flex;
+  gap: var(--gap-m);
+}
+.grow {
+  flex: 1;
+  min-height: 0;
+}
+.cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-l);
+}
+.cols-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-m);
+}
+.split {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: var(--gap-l);
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-s);
+}
+.center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* purple surfaces flip the scoped colours back to the site's light-on-purple */
+.card,
+.frame,
+.quote,
+.dark {
+  --fg: var(--text-primary);
+  --fg-muted: var(--text-secondary);
+  --text-fill: var(--text-grad);
+  --dot: var(--accent-grad);
+  color: var(--fg);
+}
+.dark {
+  background: var(--purple-grad);
+}
+.card {
+  background: var(--purple-grad);
+  border-radius: var(--radius-l);
+  padding: var(--gap-m);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+.card .big {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+}
+.frame {
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  background: var(--surface-default);
+  position: relative;
+  box-shadow: 0 24px 60px -24px rgba(56, 17, 116, 0.55);
+}
+.label {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gap-xs);
+}
+.label .when {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+/* animations + media */
+.anim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.anim svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.media video,
+.media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.media .strip {
+  display: none;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+  gap: 8px;
+  padding: 8px;
+}
+html.print .media .strip {
+  display: grid;
+}
+.media .strip img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+.strip.anim-strip {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+  gap: var(--gap-xs);
+  width: 100%;
+  height: 100%;
+}
+.strip.anim-strip > div {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.strip.anim-strip svg {
+  width: 100%;
+  height: 100%;
+}
+.strip.vertical {
+  grid-template-columns: 1fr;
+}
+
+/* ---------- specific slides ---------- */
+.title-slide {
+  justify-content: center;
+  gap: var(--gap-l);
+}
+.title-slide .anim {
+  height: 300px;
+  justify-content: flex-start;
+}
+.title-slide .anim svg {
+  width: auto;
+}
+
+.flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-s);
+  align-items: stretch;
+  margin-top: var(--gap-m);
+}
+.flow .card {
+  min-height: 360px;
+}
+.flow .card {
+  position: relative;
+}
+.flow .step,
+.card .step {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f6c85a;
+  letter-spacing: 0.1em;
+}
+.flow .card:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -22px;
+  top: 50%;
+  transform: translate(50%, -50%);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  z-index: 1;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  column-gap: var(--gap-m);
+  row-gap: 18px;
+  align-items: baseline;
+}
+.timeline .t {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.timeline .w {
+  font-size: 26px;
+}
+.timeline .w small {
+  display: block;
+  font-size: 19px;
+  color: var(--fg-muted);
+}
+.timeline .tag {
+  justify-self: end;
+}
+
+.quote {
+  background: var(--surface-sunken);
+  border-radius: var(--radius-l);
+  padding: var(--gap-m);
+  font-size: 25px;
+  line-height: 1.5;
+  position: relative;
+}
+.quote cite {
+  display: block;
+  margin-top: var(--gap-xs);
+  font-style: normal;
+  font-size: 18px;
+  color: var(--fg-muted);
+}
+
+.tools {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-s);
+}
+.tools .card h3 {
+  font-size: 28px;
+}
+
+.screens {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--gap-m);
+  align-items: end;
+  flex: 1;
+  min-height: 0;
+}
+.screens .frame img {
+  width: 100%;
+  display: block;
+}
+
+.notes {
+  display: none;
+}
+.code {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  border-radius: var(--radius-l);
+  padding: var(--gap-m);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: var(--gap-m);
+  align-items: start;
+}
+.code pre {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 22px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.code pre b {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.code pre i {
+  font-style: normal;
+  background: var(--text-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+.code .label {
+  grid-column: 1 / -1;
+  margin-bottom: var(--gap-xs);
+}

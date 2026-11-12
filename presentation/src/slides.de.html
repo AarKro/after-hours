@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>After Hours – Motion Design</title>
+<style>{{fonts}}
+{{css}}</style>
+</head>
+<body>
+<main class="deck">
+
+<!-- 1 ─ Titel -->
+<section class="slide title-slide dark">
+  <div class="kicker">Motion Design · HFIAD · November 2026</div>
+  <div class="anim" data-anim="logo"></div>
+  <p class="lede">Animierte Illustrationen für die Website einer Cocktailbar in Zürich.</p>
+  <div class="slide-foot"><span>Aaron Kromer</span><span class="n"></span></div>
+  <aside class="notes">Kurz vorstellen: After Hours ist eine fiktive Cocktailbar in Zürich. Ich habe die Illustrationen animiert und daraus eine Website gebaut. Das Logo hier ist schon die erste Animation.</aside>
+</section>
+
+<!-- 2 ─ Projekt -->
+<section class="slide">
+  <div class="kicker">01 — Projekt</div>
+  <h2>Eine Bar, die schon auf der Website Stimmung macht.</h2>
+  <div class="cols-3 grow" style="align-items:start">
+    <div class="card"><span class="big" style="background:var(--text-grad);-webkit-background-clip:text;background-clip:text;color:transparent">7</span><h3>Animationen</h3><p class="muted">Logo, Bar-Szene (Intro + Loop), drei Drinks und ein Button.</p></div>
+    <div class="card"><span class="big" style="background:var(--text-grad);-webkit-background-clip:text;background-clip:text;color:transparent">1</span><h3>Website</h3><p class="muted">React-Site mit Menü, Rezepten und Kontakt – live auf GitHub Pages.</p></div>
+    <div class="card"><span class="big" style="background:var(--text-grad);-webkit-background-clip:text;background-clip:text;color:transparent">0</span><h3>Videos</h3><p class="muted">Jede Animation ist ein SVG, das sich selbst abspielt. Kein Player, keine Library.</p></div>
+  </div>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Nur kurz: der Fokus liegt auf dem Motion Design. Sieben Animationen, alle laufen direkt als SVG auf der Website.</aside>
+</section>
+
+<!-- 3 ─ Workflow -->
+<section class="slide">
+  <div class="kicker">02 — Workflow <span class="chip chip-hand">Von Hand</span></div>
+  <h2>Vom Vektor zur Website</h2>
+  <div class="flow">
+    <div class="card"><span class="step">01</span><h3>Illustrator</h3><p class="muted">Illustration vorbereiten: jedes bewegte Teil auf eine eigene Ebene.</p></div>
+    <div class="card"><span class="step">02</span><h3>After Effects</h3><p class="muted">Shape Layers, Keyframes, Kurven im Graph Editor. Bewusst keine Expressions.</p></div>
+    <div class="card"><span class="step">03</span><h3>better-lottie</h3><p class="muted">Mein eigener Exporter: macht aus der AE-Komposition ein SVG mit SMIL-Animation.</p></div>
+    <div class="card"><span class="step">04</span><h3>Website</h3><p class="muted">Das SVG wird inline eingebettet und spielt ab, sobald es ins Bild scrollt.</p></div>
+  </div>
+  <div class="code">
+    <div class="label">Der Stern im Rocks Glass – so landet er im SVG</div>
+<pre>&lt;<b>animateTransform</b> type="rotate"
+  values="0; 0; <i>195</i>; 180; 180"
+  keyTimes="0; 0.41; 0.51; 0.71; 1"
+  calcMode="spline"
+  keySplines="0 0 1 1; <i>0.17 0.17 0 0.99</i>; …"
+  dur="4.44s" fill="freeze"/&gt;</pre>
+<pre style="font-family:inherit;font-size:22px;line-height:1.6">
+
+← dreht über 180° hinaus und schwingt zurück
+
+← die Kurve aus dem Graph Editor, 1:1 übernommen
+</pre>
+  </div>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Der Weg für die handgemachten Animationen. Wichtig: better-lottie habe ich für dieses Projekt geschrieben, weil Lottie einen Player braucht. Mit SMIL animiert sich die Datei selbst.</aside>
+</section>
+
+<!-- 4 ─ Zeitachse -->
+<section class="slide">
+  <div class="kicker">03 — Prozess</div>
+  <h2>Spurensuche in den Auto-Saves</h2>
+  <p class="lede">Kaum Screenshots gemacht – aber After Effects hat mitgeschrieben. Die Zeitstempel stammen aus Auto-Saves, Projektkopien und Git.</p>
+  <ul class="timeline">
+    <li class="t">31.10. · 08:51</li><li class="w">Shaker – die erste Komposition<small>Media-Encoder-Kopie · 58 Keyframes</small></li><li class="tag"><span class="chip chip-hand">Hand</span></li>
+    <li class="t">31.10. · 10:48</li><li class="w">Orange und Rocks Glass v1<small>Auto-Save 11</small></li><li class="tag"><span class="chip chip-hand">Hand</span></li>
+    <li class="t">31.10. · 13:19</li><li class="w">better-lottie: erster Commit<small>Exporter für die Website</small></li><li class="tag"><span class="chip chip-hand">Code</span></li>
+    <li class="t">bis 07.11.</li><li class="w">Logo neu, Rocks Glass überarbeitet<small>Auto-Save 12</small></li><li class="tag"><span class="chip chip-hand">Hand</span></li>
+    <li class="t">07.11. · 14:14</li><li class="w">Bar-Szene: Ebenen, Intro und Loop<small>Claude Code steuert Illustrator und After Effects</small></li><li class="tag"><span class="chip chip-ai">KI</span></li>
+    <li class="t">07.11. · 15:34</li><li class="w">Reservations-Button<small>Claude Code</small></li><li class="tag"><span class="chip chip-ai">KI</span></li>
+    <li class="t">08.11.</li><li class="w">Finales Projekt<small>7 Kompositionen · 758 Keyframes</small></li><li class="tag"></li>
+  </ul>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Ich habe wenig dokumentiert, aber After Effects legt Auto-Saves an. Daraus lässt sich die Reihenfolge rekonstruieren: zuerst die Drinks von Hand, dann der Exporter, dann Logo. Die Bar-Szene und den Button habe ich mit KI umgesetzt – dazu gleich mehr.</aside>
+</section>
+
+<!-- 5 ─ Rocks Glass v1 vs. final -->
+<section class="slide">
+  <div class="kicker">04 — Iteration <span class="chip chip-hand">Von Hand</span></div>
+  <h2>Rocks Glass: erste Fassung vs. final</h2>
+  <div class="split">
+    <div class="cols-2" style="gap:var(--gap-s)">
+      <div class="stack"><div class="label">v1 <span class="when">31.10.</span></div><div class="media frame">{{video rocks-glass-v1 4 2}}</div></div>
+      <div class="stack"><div class="label">Final <span class="when">07.11.</span></div><div class="media frame">{{video rocks-glass-final 4 2}}</div></div>
+    </div>
+    <ul class="points">
+      <li>Die Flüssigkeit schwappt jetzt mit der Glasbewegung mit.</li>
+      <li>Neu: Eiswürfel plumpst ins Glas, die Zeste zeichnet sich ein.</li>
+      <li>Stern-Akzent von 4,0 s auf 1,8 s vorgezogen – kein Leerlauf mehr.</li>
+      <li><strong>36 → 65</strong> Keyframes, <strong>9 → 35</strong> eigene Kurven.</li>
+    </ul>
+  </div>
+  <p class="footnote">Beide Fassungen aus den Original-Projektdateien gerendert (Auto-Save 11 und finales Projekt).</p>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Echter Vorher-Nachher-Vergleich aus den Auto-Saves. Links die erste Fassung: das Glas wackelt, die Flüssigkeit ist einfach da, der Stern kommt viel zu spät. Rechts final: mehr Physik, mehr Details, besseres Timing.</aside>
+</section>
+
+<!-- 6 ─ Logo: Blocking → Rohfassung → Final -->
+<section class="slide">
+  <div class="kicker">05 — Arbeitsphasen <span class="chip chip-hand">Von Hand</span></div>
+  <h2>Logo: Blocking → Rohfassung → Final</h2>
+  <div class="stack grow" style="justify-content:center">
+    <div class="row" style="align-items:center"><div class="stack" style="width:360px;gap:6px"><h3>Blocking</h3><p class="muted">Nur Schlüsselposen, harte Sprünge. Stimmt die Reihenfolge?</p></div><div class="media frame grow">{{video logo-blocking 3}}</div></div>
+    <div class="row" style="align-items:center"><div class="stack" style="width:360px;gap:6px"><h3>Rohfassung</h3><p class="muted">Alles bewegt sich – aber linear, ohne Nachschwingen und Sterne.</p></div><div class="media frame grow">{{video logo-rohfassung 3}}</div></div>
+    <div class="row" style="align-items:center"><div class="stack" style="width:360px;gap:6px"><h3>Final</h3><p class="muted">Eigene Kurven, Überschwinger, funkelnde Sterne. 141 Keyframes.</p></div><div class="media frame grow">{{video logo-final 3}}</div></div>
+  </div>
+  <p class="footnote">Blocking und Rohfassung nachträglich aus der finalen Komposition rekonstruiert (Keyframes reduziert, Interpolation auf Hold bzw. Linear) – zur Veranschaulichung der Arbeitsschritte.</p>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">So arbeite ich grundsätzlich: erst Timing und Reihenfolge mit harten Posen, dann Bewegung, dann der Feinschliff. Ehrlich gesagt: diese Zwischenstände habe ich nachträglich aus der finalen Datei rekonstruiert – der Unterschied zeigt aber gut, was der Feinschliff ausmacht.</aside>
+</section>
+
+<!-- 7 ─ Drinks -->
+<section class="slide">
+  <div class="kicker">06 — Drinks <span class="chip chip-hand">Von Hand</span></div>
+  <h2>Drei Illustrationen, drei Bewegungen</h2>
+  <div class="cols-3 grow">
+    <div class="card"><div class="anim" style="height:380px" data-anim="rocks-glass" data-play="repeat" data-print="strip" data-frames="4" data-cols="2"></div><h3>Rocks Glass</h3><p class="muted">Glas kippt herein, Flüssigkeit schwappt, Eiswürfel plumpst.</p><p class="muted" style="font-size:19px">Old Fashioned · Negroni</p></div>
+    <div class="card"><div class="anim" style="height:380px" data-anim="orange" data-play="repeat" data-print="strip" data-frames="4" data-cols="2" data-delay="500"></div><h3>Orange</h3><p class="muted">Scheibe wächst, Linien zeichnen sich ein, Blatt entfaltet sich.</p><p class="muted" style="font-size:19px">Amaretto Sour · Aperol Spritz</p></div>
+    <div class="card"><div class="anim" style="height:380px" data-anim="shaker" data-play="repeat" data-print="strip" data-frames="4" data-cols="2" data-delay="700"></div><h3>Shaker</h3><p class="muted">Teile fallen zusammen, Shaker schüttelt, Tropfen spritzen.</p><p class="muted" style="font-size:19px">Espresso Martini</p></div>
+  </div>
+  <p class="footnote">Auf der Rezeptseite spielt die Animation einmal ab, auf den Menü-Karten erscheint das Standbild des letzten Frames.</p>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Die drei Drink-Illustrationen teilen sich eine Sprache: kurze Aufbau-Bewegung, ein physikalischer Moment, ein kleiner Stern als Abschluss.</aside>
+</section>
+
+<!-- 8 ─ KI: Werkzeuge -->
+<section class="slide">
+  <div class="kicker">07 — Bar-Szene <span class="chip chip-ai">KI</span></div>
+  <h2>Die Bar-Szene habe ich mit KI animiert.</h2>
+  <p class="lede">Statt Keyframe für Keyframe: Regie führen. Claude Code steuert Illustrator und After Effects per Skript – ich liefere Briefing, Feedback und Abnahme.</p>
+  <div class="tools grow" style="align-items:start">
+    <div class="card"><span class="step" style="letter-spacing:.1em">AGENT</span><h3>Claude Code</h3><p class="muted">KI-Agent im Terminal. Plant, schreibt und startet die Skripte.</p></div>
+    <div class="card"><span class="step" style="letter-spacing:.1em">EXTENDSCRIPT</span><h3>Illustrator</h3><p class="muted">Illustration in 30 benannte Ebenen zerlegt – bereit für AE.</p></div>
+    <div class="card"><span class="step" style="letter-spacing:.1em">EXTENDSCRIPT</span><h3>After Effects</h3><p class="muted">Kompositionen, Keyframes und Kurven per Skript gesetzt.</p></div>
+    <div class="card"><span class="step" style="letter-spacing:.1em">KONTROLLE</span><h3>better-lottie + Chrome</h3><p class="muted">Export als SVG, Frame für Frame mit AE verglichen.</p></div>
+  </div>
+  <p class="lede" style="font-size:26px">Die Grundlage waren meine handgemachten Kompositionen: Kurven und Timing hat Claude aus Logo und Rocks Glass übernommen.</p>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Hier der Bruch: die Bar-Szene ist nicht von Hand animiert. Ich habe Claude Code benutzt, einen KI-Agenten, der Illustrator und After Effects über Skripte fernsteuert. Wichtig: Er hat sich an meinen eigenen Animationen orientiert – Kurven, Timing, Technik.</aside>
+</section>
+
+<!-- 9 ─ KI: Ausgangslage + Briefing -->
+<section class="slide">
+  <div class="kicker">08 — KI-Prozess <span class="chip chip-ai">KI</span></div>
+  <h2>Ausgangslage und Briefing</h2>
+  <div class="split">
+    <div class="stack">
+      <div class="label">Ausgangslage <span class="when">statische Illustration · 58 Objekte auf einer Ebene</span></div>
+      <div class="frame anim" style="padding:48px;aspect-ratio:364/260">{{svgfile process/bar-illustration.svg}}</div>
+    </div>
+    <div class="stack">
+      <div class="quote">„Das Licht der Lampen soll einflackern. Der Mond kommt ins Fenster wie beim Logo, die Sterne genauso – mit Maske, nur im Fenster. Zuerst wird die Theke gezeichnet, dann erscheint der Rest. Das Glas aus Rocks Glass rutscht über die Theke. Zwei Teile: ein Intro beim Laden und ein Loop mit Sternen und Lampen. Einfach animieren, keine Expressions – orientier dich an den anderen Comps.“<cite>Mein Briefing an Claude Code · 07.11., 14:26 (übersetzt, gekürzt)</cite></div>
+      <ul class="timeline" style="grid-template-columns:110px 1fr;row-gap:6px;margin-top:var(--gap-xs)">
+        <li class="t">14:14</li><li class="w" style="font-size:22px">Ebenen in Illustrator vorbereiten</li>
+        <li class="t">14:26</li><li class="w" style="font-size:22px">Briefing</li>
+        <li class="t">14:33</li><li class="w" style="font-size:22px">Erster Entwurf</li>
+        <li class="t">14:37</li><li class="w" style="font-size:22px">Feedback</li>
+        <li class="t">14:39</li><li class="w" style="font-size:22px">Final</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Ausgangspunkt war die fertige, statische Illustration. Claude hat sie zuerst in Illustrator in Ebenen zerlegt, ich habe sie in AE importiert und dann dieses Briefing geschrieben. Von Briefing bis Abnahme: 13 Minuten.</aside>
+</section>
+
+<!-- 10 ─ KI: Entwurf vs. Final -->
+<section class="slide">
+  <div class="kicker">09 — KI-Prozess <span class="chip chip-ai">KI</span></div>
+  <h2>Erster Entwurf → Feedback → Final</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr 400px;gap:var(--gap-m);align-items:center">
+    <div class="stack"><div class="label">Erster Entwurf <span class="when">14:33</span></div><div class="media frame">{{video bar-intro-ai-draft 4 2}}</div></div>
+    <div class="stack"><div class="label">Final <span class="when">14:39</span></div><div class="media frame">{{video bar-intro-final 4 2}}</div></div>
+    <div class="quote">„Die Flaschen im Hintergrund nicht einzeichnen, sondern reinploppen lassen – sonst passiert zu viel auf einmal.“<cite>Mein Feedback · 14:37 (übersetzt)</cite></div>
+  </div>
+  <p class="footnote">Der Entwurf wurde mit dem Original-Skript aus der Claude-Code-Session neu erzeugt und gerendert.</p>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Der erste Entwurf war schon nah dran, aber die Flaschen wurden alle als Linie eingezeichnet – zu unruhig. Eine Feedback-Runde: Flaschen ploppen jetzt einzeln rein. Die Designentscheidung lag bei mir, die Umsetzung bei der KI.</aside>
+</section>
+
+<!-- 11 ─ Bar final -->
+<section class="slide">
+  <div class="kicker">10 — Hero <span class="chip chip-ai">KI</span></div>
+  <h2>Intro einmal, danach der Loop</h2>
+  <div class="split">
+    <div class="frame anim" style="aspect-ratio:1024/732" data-anim="bar" data-play="bar"></div>
+    <ul class="points">
+      <li><strong>Intro, 5,2 s:</strong> Theke → Fenster und Lampen → Regale → Gläser.</li>
+      <li>Flaschen ploppen gestaffelt im 70-ms-Takt.</li>
+      <li><strong>Loop, 4 s, nahtlos:</strong> Lampen flackern, Sterne funkeln.</li>
+      <li>64 Ebenen · 360 Keyframes · 13 Minuten von Briefing bis Abnahme.</li>
+    </ul>
+  </div>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">So läuft es auf der Website: das Intro spielt einmal beim Laden, dann wechselt die Seite nahtlos in den Loop.</aside>
+</section>
+
+<!-- 12 ─ Button -->
+<section class="slide">
+  <div class="kicker">11 — Button <span class="chip chip-ai">KI</span></div>
+  <h2>„Reserve a table“ bei Hover</h2>
+  <div class="split">
+    <div class="frame anim" style="aspect-ratio:16/9;padding:80px" data-anim="button" data-play="repeat" data-print="strip" data-frames="4" data-vertical></div>
+    <ul class="points">
+      <li>Spielt bei Hover und Fokus – nur auf Desktop.</li>
+      <li>Buchstabenwelle im 40-ms-Versatz, drei Sterne ploppen auf.</li>
+      <li>Erste Version hat gestaucht – wirkte wie ein Klick. Nach meinem Feedback: Sterne in Negativ-Optik.</li>
+      <li>Ebenfalls mit Claude Code umgesetzt · 0,88 s.</li>
+    </ul>
+  </div>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Kurze Hover-Animation. Auch hier: die erste KI-Version war technisch gut, aber gestalterisch falsch – sie sah aus wie ein Klick. Mein Feedback hat das korrigiert.</aside>
+</section>
+
+<!-- 13 ─ Website -->
+<section class="slide">
+  <div class="kicker">12 — Produkt</div>
+  <h2>Die fertige Website</h2>
+  <div class="screens">
+    <div class="frame"><img src="{{img screens/home-desktop.jpg}}" alt="Startseite auf dem Desktop"></div>
+    <div class="frame" style="border-radius:36px"><img src="{{img screens/recipe-mobile.jpg}}" alt="Rezeptseite auf dem Smartphone"></div>
+  </div>
+  <div class="row" style="justify-content:space-between">
+    <p class="muted">Animationen starten beim Scrollen ins Bild · <em>prefers-reduced-motion</em> zeigt direkt das Endbild · React, Vite, GitHub Pages</p>
+  </div>
+  <div class="slide-foot"><span>After Hours · Motion Design</span><span class="n"></span></div>
+  <aside class="notes">Jetzt live zeigen: Startseite laden (Bar-Intro), runterscrollen zum Menü, ein Rezept öffnen (Drink-Animation), über den Reserve-Button hovern.</aside>
+</section>
+
+<!-- 14 ─ Danke -->
+<section class="slide title-slide dark">
+  <div class="anim" data-anim="logo"></div>
+  <h1>Danke!</h1>
+  <p class="lede">Live ansehen: <a class="grad" style="font-weight:700;text-decoration:none" href="https://aarkro.github.io/after-hours/">aarkro.github.io/after-hours</a></p>
+  <div class="slide-foot"><span>Aaron Kromer</span><span class="n"></span></div>
+  <aside class="notes">Fragen?</aside>
+</section>
+
+</main>
+<div class="progress"></div>
+<script>window.ANIMS = {{anims}};</script>
+<script>{{js}}</script>
+</body>
+</html>
