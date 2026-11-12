@@ -1,0 +1,1 @@
+import{h as e,p as t}from"./routes-BJKwsTvW.js";var n=e(t(),1),r=`After Hours`;function i(e){(0,n.useEffect)(()=>{document.title=e?`${e} · ${r}`:`${r} — Cocktail bar in Zürich`},[e])}export{i as t};
