@@ -28,12 +28,15 @@
   // The illustrations' four-point star, added where data-spark is set (value = start time in s).
   const STAR =
     '<svg viewBox="-4 -4 8 8" aria-hidden="true"><path d="M0-4L1.12-1.12L4 0L1.12 1.12L0 4L-1.12 1.12L-4 0L-1.12-1.12Z"/></svg>'
+  // Several start times (space separated) add several stars.
   document.querySelectorAll('[data-spark]').forEach((el) => {
-    const star = document.createElement('span')
-    star.className = 'spark'
-    star.innerHTML = STAR
-    if (el.dataset.spark) star.style.setProperty('--spark-at', `${el.dataset.spark}s`)
-    el.append(star)
+    for (const at of (el.dataset.spark || '').split(/\s+/)) {
+      const star = document.createElement('span')
+      star.className = 'spark'
+      star.innerHTML = STAR
+      if (at) star.style.setProperty('--spark-at', `${at}s`)
+      el.append(star)
+    }
   })
   const progress = document.querySelector('.progress')
 

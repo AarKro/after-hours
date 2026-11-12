@@ -242,6 +242,29 @@ p {
   color: var(--ink-soft);
 }
 
+.thanks {
+  align-items: center;
+  text-align: center;
+}
+.thanks h1 {
+  font-size: 200px;
+  position: relative;
+}
+/* keep the star out of the text box so the word itself is centred */
+.thanks .spark {
+  position: absolute;
+  top: -0.05em;
+  right: -0.45em;
+  margin: 0;
+}
+/* second, smaller star offset above the first, like the pair in the logo */
+.thanks .spark + .spark {
+  width: 0.2em;
+  height: 0.2em;
+  top: -0.22em;
+  right: -0.68em;
+}
+
 /* links on the end slide: label in header style, link below */
 .links {
   list-style: none;
