@@ -221,13 +221,16 @@ p {
 .title-slide .anim {
   height: 300px;
   justify-content: flex-start;
+  /* logo.svg has empty canvas left of the circle (≈7% of its height); pull it onto the text edge */
+  margin-left: -22px;
 }
 .title-slide .anim svg {
   width: auto;
 }
-.title-slide p {
-  font-size: 32px;
-  color: var(--text-secondary);
+.title-slide .byline {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink-soft);
 }
 
 /* ---------- project: Figma excerpts running off the bottom edge ---------- */
