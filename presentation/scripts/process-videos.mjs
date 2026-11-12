@@ -43,8 +43,30 @@ function contentBox(dir) {
   return { x1, y1, x2, y2 }
 }
 
+/**
+ * Number of frames up to the last one with any visible pixel. AE renders the frame at the comp's
+ * exact end empty when a layer ends there; padding would repeat that blank frame, so drop it.
+ */
+function visibleFrames(dir) {
+  const log = spawnSync('ffmpeg', [
+    '-hide_banner',
+    '-i',
+    join(dir, '%04d.png'),
+    '-vf',
+    'alphaextract,signalstats,metadata=print:key=lavfi.signalstats.YMAX',
+    '-f',
+    'null',
+    '-',
+  ]).stderr.toString()
+  const ymax = [...log.matchAll(/YMAX=(\d+)/g)].map((m) => +m[1])
+  let n = ymax.length
+  while (n > 1 && ymax[n - 1] === 0) n--
+  return n
+}
+
 for (const name of readdirSync(framesDir)) {
   const dir = join(framesDir, name)
+  const frames = ['-frames:v', String(visibleFrames(dir))]
   if (full) {
     const filter = `color=c=${BG}:r=25[c];[c][0]scale2ref[bg][fg];[bg][fg]overlay=shortest=1,scale=${full}:-2:flags=lanczos,setsar=1,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p`
     execFileSync('ffmpeg', [
@@ -57,6 +79,7 @@ for (const name of readdirSync(framesDir)) {
       join(dir, '%04d.png'),
       '-filter_complex',
       filter,
+      ...frames,
       '-c:v',
       'libx264',
       ...BT709,
@@ -92,6 +115,7 @@ for (const name of readdirSync(framesDir)) {
     join(dir, '%04d.png'),
     '-filter_complex',
     filter,
+    ...frames,
     '-c:v',
     'libx264',
     ...BT709,
