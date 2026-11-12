@@ -6,6 +6,35 @@
   if (PRINT) document.documentElement.classList.add('print')
 
   const slides = [...document.querySelectorAll('.slide')]
+
+  // ---------- motion hooks (styles in deck.css) ----------
+  // Headline words rise one after another, like the letters of the logo.
+  document.querySelectorAll('.slide h1, .slide h2').forEach((h) => {
+    let i = 0
+    h.innerHTML = h.textContent
+      .split(/(\s+)/)
+      .map((t) => (t.trim() ? `<span class="w" style="--w:${i++}">${t}</span>` : t))
+      .join('')
+  })
+  // Content plops in with a stagger, in reading order.
+  const REVEAL =
+    '.compare .item, .flow > *, .code, .roles > .frame, .brief > *, .hero-live, .shots img, .live-link > *, .links li, .byline'
+  slides.forEach((s) =>
+    s.querySelectorAll(REVEAL).forEach((el, n) => {
+      el.classList.add('rv')
+      el.style.setProperty('--n', n)
+    }),
+  )
+  // The illustrations' four-point star, added where data-spark is set (value = start time in s).
+  const STAR =
+    '<svg viewBox="-4 -4 8 8" aria-hidden="true"><path d="M0-4L1.12-1.12L4 0L1.12 1.12L0 4L-1.12 1.12L-4 0L-1.12-1.12Z"/></svg>'
+  document.querySelectorAll('[data-spark]').forEach((el) => {
+    const star = document.createElement('span')
+    star.className = 'spark'
+    star.innerHTML = STAR
+    if (el.dataset.spark) star.style.setProperty('--spark-at', `${el.dataset.spark}s`)
+    el.append(star)
+  })
   const progress = document.querySelector('.progress')
 
   // ---------- SVG helpers (same idea as the site's <AnimatedSvg>) ----------

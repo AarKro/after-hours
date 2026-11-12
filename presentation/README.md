@@ -16,6 +16,9 @@ npm run all        # GIFs → deck → PDF → out/abgabe/ + out/After-Hours_Abg
 | `npm run package`    | collects PDF, HTML deck, GIFs, notes and the website link in `out/abgabe/`                |
 | `npm run process`    | PNG sequences rendered from After Effects → cropped MP4s in `assets/process/` (see below) |
 
+**Motion:** in present mode headlines, boxes, header lines and the little stars animate in with the curves of the After Effects
+comps (see the motion section in `src/deck.css`). Print mode and `prefers-reduced-motion` show everything static.
+
 **Presenting:** open `out/praesentation.de.html` in Chrome, `F` for fullscreen, arrows/space/clicker to navigate.
 
 ## Process material (`assets/`)
