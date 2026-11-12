@@ -76,7 +76,7 @@ The SVGs in `src/assets/animations/` are SMIL animations exported with better-lo
 
 ## Presentation
 
-`presentation/` holds the course presentation and deliverables (separate package, not part of the site build). See `presentation/README.md`. The deck is German (`src/slides.de.html`); the bar scene and the button were animated with AI (Claude Code driving Illustrator + After Effects), and the deck says so.
+`presentation/` holds the course presentation and deliverables (separate package, not part of the site build). See `presentation/README.md`. The deck is German (`src/slides.de.html`) and uses the site's look. The bar scene was animated with AI (Claude Code driving Illustrator + After Effects); only the bar slides carry the "mit KI" tag.
 
 ## Conventions
 
