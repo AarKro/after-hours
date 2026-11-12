@@ -36,6 +36,9 @@ const anims = Object.fromEntries(
   ]),
 )
 
+// libvpx is needed to decode VP9 with its alpha channel (ffmpeg's native decoder drops it)
+const VP9_IN = ['-c:v', 'libvpx-vp9']
+
 /** Evenly spaced stills from a video, used in print mode instead of the moving image. */
 function stills(file, n) {
   const dur = parseFloat(
@@ -51,26 +54,10 @@ function stills(file, n) {
   )
   return Array.from({ length: n }, (_, i) => {
     const t = Math.max(0, (dur * (i + 1)) / n - 0.08)
-    const jpg = execFileSync('ffmpeg', [
-      '-v',
-      'error',
-      '-ss',
-      t.toFixed(2),
-      '-i',
-      file,
-      '-frames:v',
-      '1',
-      '-vf',
-      'scale=640:-2',
-      '-f',
-      'image2pipe',
-      '-c:v',
-      'mjpeg',
-      '-q:v',
-      '3',
-      '-',
-    ])
-    return `<img alt="" src="data:image/jpeg;base64,${jpg.toString('base64')}">`
+    // prettier-ignore
+    const png = execFileSync('ffmpeg', ['-v', 'error', '-ss', t.toFixed(2), ...VP9_IN, '-i', file,
+      '-frames:v', '1', '-vf', 'scale=640:-2', '-f', 'image2pipe', '-c:v', 'png', '-'])
+    return `<img alt="" src="data:image/png;base64,${png.toString('base64')}">`
   }).join('')
 }
 
@@ -78,7 +65,8 @@ function stills(file, n) {
  * Draft and final of one illustration loop side by side, so both get the same length: the longer
  * one's frame count plus a one-second hold, padded by repeating the last frame (sources untouched).
  */
-const HOLD_FRAMES = 25
+const FPS = 50
+const HOLD_FRAMES = FPS
 const PAIR = /-(v1|draft|ai-draft|final)$/
 const frameCount = (file) =>
   +execFileSync('ffprobe', [
@@ -96,20 +84,19 @@ const frameCount = (file) =>
 
 function looped(name) {
   const dir = join(ASSETS, 'process')
-  const file = join(dir, `${name}.mp4`)
+  const file = join(dir, `${name}.webm`)
   if (!PAIR.test(name)) return file
   const base = name.replace(PAIR, '')
   const partners = readdirSync(dir).filter(
-    (f) => f.endsWith('.mp4') && f.replace(/\.mp4$/, '').replace(PAIR, '') === base,
+    (f) => f.endsWith('.webm') && f.replace(/\.webm$/, '').replace(PAIR, '') === base,
   )
   const target = Math.max(...partners.map((f) => frameCount(join(dir, f)))) + HOLD_FRAMES
-  const out = join(tmpdir(), `after-hours-loop-${name}.mp4`)
+  const out = join(tmpdir(), `after-hours-loop-${name}.webm`)
   // prettier-ignore
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', file,
-    '-vf', `tpad=stop=${target - frameCount(file)}:stop_mode=clone,setsar=1`,
-    '-frames:v', String(target), '-c:v', 'libx264', '-crf', '20',
-    '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709',
-    '-movflags', '+faststart', out])
+  execFileSync('ffmpeg', ['-v', 'error', '-y', ...VP9_IN, '-i', file,
+    '-vf', `tpad=stop=${target - frameCount(file)}:stop_mode=clone,format=yuva420p`,
+    '-frames:v', String(target), '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-auto-alt-ref', '0',
+    '-b:v', '0', '-crf', '30', '-row-mt', '1', '-deadline', 'good', out])
   return out
 }
 
@@ -123,7 +110,7 @@ html = html
   .replace('{{anims}}', () => JSON.stringify(anims).replace(/<\/script/g, '<\\/script'))
   .replace(/\{\{video ([\w-]+) (\d+)(?: (\d+))?\}\}/g, (_, name, n, cols = n) => {
     const file = looped(name)
-    return `<video class="live" muted playsinline preload="auto" src="data:video/mp4;base64,${b64(file)}"></video><div class="strip" style="--cols:${cols}">${stills(file, +n)}</div>`
+    return `<video class="live" muted playsinline preload="auto" src="data:video/webm;base64,${b64(file)}"></video><div class="strip" style="--cols:${cols}">${stills(file, +n)}</div>`
   })
   .replace(/\{\{svgfile ([\w/.-]+)\}\}/g, (_, p) =>
     read(join(ASSETS, p))

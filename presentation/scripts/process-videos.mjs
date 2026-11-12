@@ -1,25 +1,27 @@
-// Turns PNG sequences rendered from old After Effects auto-saves (see ae/render-frames.jsx)
-// into cropped, square MP4s on the brand background for the "v1 vs. final" slides.
-// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>] [--bg=<0xrrggbb>]
+// Turns PNG sequences rendered from After Effects (see ae/render-all-50fps.jsx) into transparent
+// 50 fps WebM (VP9 with alpha) for the draft/final slides. The box colour comes from CSS, so a
+// video can never render a slightly different purple than its card.
+// Usage: node scripts/process-videos.mjs <framesDir> [--full=<width>] [--in-fps=<fps>]
 // --full keeps the whole comp canvas instead of cropping to the artwork (for scenes like the bar),
-// scaled to <width> px.
+// scaled to <width> px. --in-fps for sequences rendered at a lower rate (frames are repeated).
 import { execFileSync, spawnSync } from 'node:child_process'
 import { readdirSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 const framesDir = process.argv[2]
-const full = Number(process.argv.find((a) => a.startsWith('--full='))?.split('=')[1] ?? 0)
+const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split('=')[1]
+const full = Number(arg('full') ?? 0)
 if (!framesDir) throw new Error('usage: process-videos.mjs <framesDir>')
 const outDir = new URL('../assets/process/', import.meta.url).pathname
 mkdirSync(outDir, { recursive: true })
 
-// Browsers assume BT.709 for untagged video; encode and tag it so brand colours stay exact.
-const BT709 = ['-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709']
+const FPS = 50
+const IN_FPS = Number(arg('in-fps') ?? FPS)
 const SIZE = 720
 const PAD = 0.12 // breathing room around the artwork, relative to its size
-// surface/raised, the box the site puts illustrations in. --bg=0x600cdf for artwork that is drawn
-// for the page background (the button's negative stars are filled with surface/default).
-const BG = process.argv.find((a) => a.startsWith('--bg='))?.split('=')[1] ?? '0x772ce8'
+// VP9 with alpha: alt-ref frames must be off for the alpha channel to survive
+const VP9 = ['-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-auto-alt-ref', '0']
+const VP9_QUALITY = ['-b:v', '0', '-crf', '30', '-row-mt', '1', '-deadline', 'good']
 
 // Union of the alpha bounding boxes of every frame, so the crop doesn't jump.
 function contentBox(dir) {
@@ -66,64 +68,37 @@ function visibleFrames(dir) {
 
 for (const name of readdirSync(framesDir)) {
   const dir = join(framesDir, name)
-  const frames = ['-frames:v', String(visibleFrames(dir))]
+  if (!readdirSync(dir).some((f) => f.endsWith('.png'))) continue
+  const frames = ['-frames:v', String(Math.round((visibleFrames(dir) * FPS) / IN_FPS))]
+  let vf
   if (full) {
-    const filter = `color=c=${BG}:r=25[c];[c][0]scale2ref[bg][fg];[bg][fg]overlay=shortest=1,scale=${full}:-2:flags=lanczos,setsar=1,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p`
-    execFileSync('ffmpeg', [
-      '-v',
-      'error',
-      '-y',
-      '-framerate',
-      '25',
-      '-i',
-      join(dir, '%04d.png'),
-      '-filter_complex',
-      filter,
-      ...frames,
-      '-c:v',
-      'libx264',
-      ...BT709,
-      '-crf',
-      '20',
-      '-movflags',
-      '+faststart',
-      join(outDir, `${name}.mp4`),
-    ])
-    console.log(name, 'full canvas')
-    continue
+    vf = `scale=${full}:-2:flags=lanczos,setsar=1`
+  } else {
+    const { x1, y1, x2, y2 } = contentBox(dir)
+    const side = Math.round(Math.max(x2 - x1, y2 - y1) * (1 + 2 * PAD))
+    const x = Math.round((x1 + x2) / 2 - side / 2)
+    const y = Math.round((y1 + y2) / 2 - side / 2)
+    // pad first so the square crop never leaves the canvas
+    vf = [
+      `pad=iw+${2 * side}:ih+${2 * side}:${side}:${side}:color=black@0`,
+      `crop=${side}:${side}:${x + side}:${y + side}`,
+      `scale=${SIZE}:${SIZE}:flags=lanczos,setsar=1`,
+    ].join(',')
   }
-  const { x1, y1, x2, y2 } = contentBox(dir)
-  const side = Math.round(Math.max(x2 - x1, y2 - y1) * (1 + 2 * PAD))
-  const cx = (x1 + x2) / 2,
-    cy = (y1 + y2) / 2
-  const x = Math.round(cx - side / 2),
-    y = Math.round(cy - side / 2)
-  // pad first so the square crop never leaves the canvas
-  const vf = [
-    `pad=iw+${2 * side}:ih+${2 * side}:${side}:${side}:color=black@0`,
-    `crop=${side}:${side}:${x + side}:${y + side}`,
-    `scale=${SIZE}:${SIZE}:flags=lanczos,setsar=1`,
-  ].join(',')
-  const filter = `color=c=${BG}:s=${SIZE}x${SIZE}:r=25[bg];[0]${vf}[fg];[bg][fg]overlay=shortest=1,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p`
   execFileSync('ffmpeg', [
     '-v',
     'error',
     '-y',
     '-framerate',
-    '25',
+    String(IN_FPS),
     '-i',
     join(dir, '%04d.png'),
-    '-filter_complex',
-    filter,
+    '-vf',
+    `${vf},fps=${FPS},format=yuva420p`,
     ...frames,
-    '-c:v',
-    'libx264',
-    ...BT709,
-    '-crf',
-    '20',
-    '-movflags',
-    '+faststart',
-    join(outDir, `${name}.mp4`),
+    ...VP9,
+    ...VP9_QUALITY,
+    join(outDir, `${name}.webm`),
   ])
-  console.log(name, { x1, y1, x2, y2, side })
+  console.log(name, full ? 'full canvas' : 'cropped')
 }
