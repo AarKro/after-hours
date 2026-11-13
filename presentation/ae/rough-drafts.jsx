@@ -9,11 +9,8 @@ var OUT = "__OUT__";
 var FPS = 50;
 var renderLog = [];
 
+// Rocks glass, orange and shaker drafts are comps in the project now ("<name>-draft"); the logo has none.
 var DRAFTS = {
-  "rocks-glass": { seconds: 4.2, keep: [/^liquid Outlines\/.*\/Path 1\/Path$/], hide: [] },
-  orange: { seconds: 4.0, keep: [], hide: [], together: /^slice line/ },
-  shaker: { seconds: 4.0, keep: [/^Null 3\/.*Position/, /^bottle body Outlines\/.*Rotation/], hide: [/^shine/] },
-  logo: { seconds: 4.0, keep: [], hide: [] },
   button: { seconds: 0.88, scale: 5, keep: [/^letter .*Position/], hide: [/^star/] }
 };
 
