@@ -280,11 +280,11 @@ p {
   color: var(--accent);
 }
 
-/* first slide: title with my name on the same baseline */
+/* first slide: my name centred on the title's cap height (on the shared baseline it looked low next to the caps) */
 .title-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
 }
 .title-row .byline {
   font-size: 22px;
